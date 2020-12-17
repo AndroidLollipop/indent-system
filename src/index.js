@@ -128,10 +128,10 @@ const DetailGenerator = ({details}) => {
   const [data, setData] = React.useState(detailPersistentStore[id])
   return (
   <div>
-  <div onClick={() => removeTab(id)}>
+  <Material.Typography>
   {"Start: "+data.startDateTime+" End: "+data.endDateTime+" Origin: "+data.origin+" Destination: "+data.destination+" POC: "+data.POC+" POC Number: "+data.POCPhone}
-  </div>
-  <Material.Select native value={data.status} onChange={(event) => {
+  </Material.Typography>
+  <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
     detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
     setData(detailPersistentStore[id])
   }}>
@@ -289,7 +289,7 @@ const transportItemGenerator = (data, index) => {
 
 const notificationItemGenerator = (data, index, key) => {
   return (
-    <Material.TableRow key={key} style={notificationItemStyle(data.latest)} onClick={() => addDetailTab(data, index)}>{data.title}</Material.TableRow>
+    <Material.TableRow key={key} style={notificationItemStyle(data.latest)} onClick={() => addDetailTab(data, index)}><Material.TableCell align="center">{data.title}</Material.TableCell></Material.TableRow>
   )
 }
 
