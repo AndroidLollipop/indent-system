@@ -1,7 +1,9 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-var serverURL = ""
+import socketIOClient from "socket.io-client";
+
+var serverURL = "http://127.0.0.1:4001"
 
 var setTabs
 var additionalTabs = []
@@ -47,11 +49,21 @@ const App = () => {
 
 const DevPanel = () => {
   const [myServerURL, setServerURL] = React.useState(serverURL)
+  const [response, setResponse] = React.useState("");
+
+  React.useEffect(() => {
+    const socket = socketIOClient(serverURL);
+    socket.on("FromAPI", data => {
+      setResponse(data);
+    });
+  }, []);
+
   return (<div>
     <div>Server URL</div><textarea value={myServerURL} onChange={(event) => {
       serverURL = event.target.value
       setServerURL(serverURL)
     }}/>
+    <div>It's {response}</div>
   </div>)
 }
 
