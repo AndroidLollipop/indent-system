@@ -1,9 +1,15 @@
-.App {
+body {
+	margin: 0;
+	padding: 0;
+}
+
+ .App {
   text-align: center;
+  font-family: monospace;
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 180px;
   pointer-events: none;
 }
 
