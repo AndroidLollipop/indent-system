@@ -131,13 +131,13 @@ const DetailGenerator = ({details}) => {
   <div onClick={() => removeTab(id)}>
   {"Start: "+data.startDateTime+" End: "+data.endDateTime+" Origin: "+data.origin+" Destination: "+data.destination+" POC: "+data.POC+" POC Number: "+data.POCPhone}
   </div>
-  <select value={data.status} onChange={(event) => {
+  <Material.Select native value={data.status} onChange={(event) => {
     detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
     setData(detailPersistentStore[id])
   }}>
   {statuses.map((val, index) => (<option key={index} value={val}>{val}</option>))}
-  </select>
-  <Material.Button onClick={() => {editData(index, detailPersistentStore[id])}}>Save</Material.Button>
+  </Material.Select>
+  <Material.Button variant="outlined" onClick={() => {editData(index, detailPersistentStore[id])}}>Save</Material.Button>
   </div>
   )
 }
@@ -243,7 +243,7 @@ const FormFactory = ({fields, defaults}) => {
     )
   })}
   </div>
-  <Material.Button onClick={submit}>submit</Material.Button>
+  <Material.Button variant="outlined" onClick={submit}>submit</Material.Button>
   </form>
   )
 }
@@ -274,13 +274,22 @@ const TransportViewStyle = {
 
 const transportItemGenerator = (data, index) => {
   return (
-    <div key={data.internalUID} onClick={() => addDetailTab(data, index)}>{"Title: "+data.name+" Start: "+data.startDateTime+" End: "+data.endDateTime+" Origin: "+data.origin+" Destination: "+data.destination+" POC: "+data.POC+" POC Number: "+data.POCPhone+" Status: "+data.status}</div>
+    <Material.TableRow key={data.internalUID} onClick={() => addDetailTab(data, index)}>
+      <Material.TableCell>{"Title: "+data.name}</Material.TableCell>
+      <Material.TableCell>{"Start: "+data.startDateTime}</Material.TableCell>
+      <Material.TableCell>{"End: "+data.endDateTime}</Material.TableCell>
+      <Material.TableCell>{"Origin: "+data.origin}</Material.TableCell>
+      <Material.TableCell>{"Destination: "+data.destination}</Material.TableCell>
+      <Material.TableCell>{"POC: "+data.POC}</Material.TableCell>
+      <Material.TableCell>{"POC Number: "+data.POCPhone}</Material.TableCell>
+      <Material.TableCell>{"Status: "+data.status}</Material.TableCell>
+    </Material.TableRow>
   )
 }
 
 const notificationItemGenerator = (data, index, key) => {
   return (
-    <div key={key} style={notificationItemStyle(data.latest)} onClick={() => addDetailTab(data, index)}>{data.title}</div>
+    <Material.TableRow key={key} style={notificationItemStyle(data.latest)} onClick={() => addDetailTab(data, index)}>{data.title}</Material.TableRow>
   )
 }
 
@@ -302,11 +311,15 @@ const addDetailTab = (data, index) => {
 
 const ListFactory = ({data, generator, style, header, tail}) => {
   return (
-    <div style={style}>
-    {header}
-    {data.map(generator)}
-    {tail}
-    </div>
+    <Material.TableContainer>
+      <Material.Table>
+        <Material.TableBody>
+          {header}
+          {data.map(generator)}
+          {tail}
+        </Material.TableBody>
+      </Material.Table>
+    </Material.TableContainer>
   )
 }
 
