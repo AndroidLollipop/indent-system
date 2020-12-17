@@ -27,7 +27,25 @@ const App = () => {
   setTabs = mySetTabs
   React.useEffect(() => {
     socket = socketIOClient(serverURL);
+    socket.on("sendIndents", (indents, writeToken) => {
+      if (writeToken !== undefined) {
+        if (writeToken < ackWriteToken) {
+          return
+        }
+        ackWriteToken = writeToken
+        if (pendingWrites[writeToken] !== undefined) {
+          pendingWrites[writeToken]()
+        }
+      }
+      dataStore = [...indents]
+      notifyNewData()
+    })
+    socket.on("sendNotifications", (notifications) => {
+      notificationsStore = [...notifications]
+      notifyNewN()
+    })
     socket.emit("requestIndents", "")
+    socket.emit("requestNotifications", "")
     return () => {
       socket.disconnect()
     }
@@ -122,11 +140,11 @@ const DetailGenerator = ({details}) => {
   )
 }
 
-const editData = (index, newData) => {
-  setTimeout(() => {
-    writeDataStore(index, newData)
+const editData = async (index, newData) => {
+  const refresh = await writeDataStore(index, newData)
+  if (refresh) {
     notifyNewData()
-  }, fakeServerDelay)
+  }
 }
 
 const readDataStore = (internalUID) => {
@@ -139,17 +157,26 @@ const readDataStore = (internalUID) => {
   }
 }
 
-const writeDataStore = (internalUID, write) => {
-  const index = dataStore.findIndex(x => x.internalUID === internalUID)
-  dataStore = [...dataStore]
-  if (index > -1) {
-    //MOCK SERVER, REMOVE IN PRODUCTION
-    mockNotificationSystem(write, dataStore[index])
-    dataStore[index] = write
+var ackWriteToken = 0
+var currWriteToken = 0
+var pendingWrites = []
+
+
+const writeDataStore = async (internalUID, write) => {
+  currWriteToken++
+  var resolve
+  const myPromise = new Promise(v => resolve=v)
+  pendingWrites[currWriteToken] = resolve
+  socket.emit("writeDataStore", [internalUID, write, currWriteToken])
+  console.log("hi")
+  await myPromise
+  if (currWriteToken == ackWriteToken) {
+    return true
+  }
+  else {
+    return false
   }
 }
-
-var internalUID = 3
 
 const mockNotificationSystem = ({internalUID, status}, {internalUID: oldUID, status: oldStatus}) => {
   if (status !== oldStatus && internalUID === oldUID) {
@@ -158,9 +185,19 @@ const mockNotificationSystem = ({internalUID, status}, {internalUID: oldUID, sta
   }
 }
 
-const appendDataStore = (write) => {
-  dataStore = [...dataStore, {...write, internalUID: internalUID}]
-  internalUID++
+const appendDataStore = async (write) => {
+  currWriteToken++
+  var resolve
+  const myPromise = new Promise(v => resolve=v)
+  pendingWrites[currWriteToken] = resolve
+  socket.emit("appendDataStore", [write, currWriteToken])
+  await myPromise
+  if (currWriteToken == ackWriteToken) {
+    return true
+  }
+  else {
+    return false
+  }
 }
 
 const readRange = () => {
@@ -177,11 +214,11 @@ const loadDataStore = async () => {
 
 const fakeServerDelay = 1000
 
-const submitForm = (data) => {
-  setTimeout(() => {
-    appendDataStore(data)
+const submitForm = async (data) => {
+  const refresh = await appendDataStore(data)
+  if (refresh) {
     notifyNewData()
-  }, fakeServerDelay)
+  }
 }
 
 const FormFactory = ({fields, defaults}) => {
