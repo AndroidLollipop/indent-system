@@ -1,6 +1,8 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
+var serverURL = ""
+
 var setTabs
 var additionalTabs = []
 var tabID = 0
@@ -35,9 +37,22 @@ const App = () => {
       </div>),
       (<div label="notifications">
         <NotificationsPanel/>
+      </div>),
+      (<div label="dev">
+        <DevPanel/>
       </div>), ...tabs.map(v => (<DetailGenerator label={readDataStore(v[1]).name} removable="true" removeCallback={() => removeTab(v[0])} details={v} key={v[0]} />))]}
     </Tabs>
   );
+}
+
+const DevPanel = () => {
+  const [myServerURL, setServerURL] = React.useState(serverURL)
+  return (<div>
+    <div>Server URL</div><textarea value={myServerURL} onChange={(event) => {
+      serverURL = event.target.value
+      setServerURL(serverURL)
+    }}/>
+  </div>)
 }
 
 const NotificationsPanel = () => {
