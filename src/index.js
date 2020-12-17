@@ -3,6 +3,8 @@ import * as ReactDOM from 'react-dom'
 
 import socketIOClient from "socket.io-client";
 
+import * as Material from "@material-ui/core"
+
 var serverURL = "http://127.0.0.1:4001"
 
 var setTabs
@@ -135,7 +137,7 @@ const DetailGenerator = ({details}) => {
   }}>
   {statuses.map((val, index) => (<option key={index} value={val}>{val}</option>))}
   </select>
-  <div onClick={() => {editData(index, detailPersistentStore[id])}}>Save</div>
+  <Material.Button onClick={() => {editData(index, detailPersistentStore[id])}}>Save</Material.Button>
   </div>
   )
 }
@@ -231,25 +233,25 @@ const FormFactory = ({fields, defaults}) => {
     initializeFields()
   }
   return (
-  <div>
+  <form noValidate>
   <div>
   {fieldStates.map(([text, setText, initialData, fieldName, friendlyName], index) => {
     return (
       <div style={formItemStyle} key={index}>
-      <div>{friendlyName}</div>
-      <textarea value={text} onChange={(event) => setText(event.target.value)}/>
+      <Material.TextField label={friendlyName} variant="outlined" value={text} onChange={(event) => setText(event.target.value)}/>
       </div>
     )
   })}
   </div>
-  <div style={{backgroundColor: "gray", borderRadius: "10px", display: "inline-block", padding: "5px"}} onClick={submit}>submit</div>
-  </div>
+  <Material.Button onClick={submit}>submit</Material.Button>
+  </form>
   )
 }
 
 const formItemStyle = {
   display: "flex",
-  justifyContent: "center"
+  justifyContent: "center",
+  padding: "5px"
 }
 
 const NewIndentView = () => {
