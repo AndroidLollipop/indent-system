@@ -19,6 +19,8 @@ const removeTab = (id) => {
   setTabs(additionalTabs)
 }
 
+var socket
+
 const App = () => {
   
   var [tabs, mySetTabs] = React.useState([])
@@ -26,7 +28,11 @@ const App = () => {
   const [temp, refresh] = React.useState(0)
   React.useEffect(() => {
     const callbackID = registerCallback(refresh)
-    return () => deregisterCallback(callbackID)
+    socket = socketIOClient(serverURL);
+    return () => {
+      deregisterCallback(callbackID)
+      socket.disconnect()
+    }
   })
 
   return (
@@ -52,10 +58,15 @@ const DevPanel = () => {
   const [response, setResponse] = React.useState("");
 
   React.useEffect(() => {
-    const socket = socketIOClient(serverURL);
-    socket.on("FromAPI", data => {
-      setResponse(data);
-    });
+    const myListener = data => {
+      setResponse(data)
+    }
+    socket.on("FromAPI", myListener);
+    socket.emit("ToAPI", "Hello!")
+    return () => {
+      socket.emit("ToAPI", "Goodbye!")
+      socket.off("FromAPI", myListener)
+    }
   }, []);
 
   return (<div>
