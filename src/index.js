@@ -168,9 +168,8 @@ const writeDataStore = async (internalUID, write) => {
   const myPromise = new Promise(v => resolve=v)
   pendingWrites[currWriteToken] = resolve
   socket.emit("writeDataStore", [internalUID, write, currWriteToken])
-  console.log("hi")
   await myPromise
-  if (currWriteToken == ackWriteToken) {
+  if (currWriteToken === ackWriteToken) {
     return true
   }
   else {
@@ -185,7 +184,7 @@ const appendDataStore = async (write) => {
   pendingWrites[currWriteToken] = resolve
   socket.emit("appendDataStore", [write, currWriteToken])
   await myPromise
-  if (currWriteToken == ackWriteToken) {
+  if (currWriteToken === ackWriteToken) {
     return true
   }
   else {
@@ -196,16 +195,6 @@ const appendDataStore = async (write) => {
 const readRange = () => {
   return dataStore
 }
-
-const sleep = async (x) => {
-  return new Promise(resolve => setTimeout(resolve, x))
-}
-
-const loadDataStore = async () => {
-  await sleep(fakeServerDelay)
-}
-
-const fakeServerDelay = 1000
 
 const submitForm = async (data) => {
   const refresh = await appendDataStore(data)
@@ -222,7 +211,7 @@ const FormFactory = ({fields, defaults}) => {
     const i = index
     const field = fields[i]
     fieldStates.push([states[i], x => {
-      myStates= [...myStates]
+      myStates = [...myStates]
       myStates[i] = x
       setStates(myStates)
     },field.initialData, field.name, field.friendlyName])
@@ -346,10 +335,6 @@ var dataStore = []
 
 const readNotifications = () => {
   return notificationsStore
-}
-
-const appendNotifications = (write) => {
-  notificationsStore = [...notificationsStore, write]
 }
 
 var notificationsStore = []
