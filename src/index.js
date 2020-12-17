@@ -364,12 +364,14 @@ const Tabs = ({children}) => {
   const [selTab, setSelTab] = React.useState(0);
   return (
     <div>
-      <div style={TabsStyle}>
-        {children.map((child, index) => {
-          const obj = {...child.props, onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1), key: child.props.mykey}
-          return (<Tab {...obj}></Tab>)
-        })}
-      </div>
+      <Material.AppBar position="static">
+        <Material.Tabs variant="scrollable" value={Math.min(selTab, children.length-1)}>
+          {children.map((child, index) => {
+            const obj = {...child.props, onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1), key: child.props.mykey}
+            return (<Tab {...obj}></Tab>)
+          })}
+        </Material.Tabs>
+      </Material.AppBar>
       <div>
         {children[Math.min(selTab, children.length-1)]}
       </div>
@@ -387,14 +389,10 @@ const TabsStyle = {
 
 const Tab = ({label, onClick, active, removable, removeCallback}) => {
   return (
-    <span style={TabWrapperStyle}>
-      <span style={TabStyle(active)}>
-        <span onClick={onClick}>
-        &nbsp;{label}&nbsp;
-        </span>
-        {removable ? (<span style={TabCloseStyle} onClick={removeCallback}>{"❌"}&nbsp;</span>) : undefined}
-      </span>
-    </span>
+    <div>
+      <Material.Tab label={" "+label+" "} onClick={onClick}/>
+      {removable ? (<span style={TabCloseStyle} onClick={removeCallback}>{"❌"}&nbsp;</span>) : undefined}
+    </div>
   )
 }
 
@@ -403,7 +401,8 @@ const TabWrapperStyle = {
 }
 
 const TabCloseStyle = {
-  font: "16px Arial, sans-serif"
+  font: "16px Arial, sans-serif",
+  margin: "auto"
 }
 
 const TabStyle = (active) => {
