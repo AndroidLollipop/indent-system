@@ -289,7 +289,7 @@ const transportItemGenerator = (data, index) => {
 
 const notificationItemGenerator = (data, index, key) => {
   return (
-    <Material.TableRow key={key} style={notificationItemStyle(data.latest)} onClick={() => addDetailTab(data, index)}><Material.TableCell align="center">{data.title}</Material.TableCell></Material.TableRow>
+    <Material.TableRow key={key} onClick={() => addDetailTab(data, index)}><Material.TableCell style={notificationItemStyle(data.latest)} align="center">{data.title}</Material.TableCell></Material.TableRow>
   )
 }
 
