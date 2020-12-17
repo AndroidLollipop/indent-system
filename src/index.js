@@ -25,30 +25,28 @@ const App = () => {
   
   var [tabs, mySetTabs] = React.useState([])
   setTabs = mySetTabs
-  const [temp, refresh] = React.useState(0)
   React.useEffect(() => {
-    const callbackID = registerCallback(refresh)
     socket = socketIOClient(serverURL);
+    socket.emit("requestIndents", "")
     return () => {
-      deregisterCallback(callbackID)
       socket.disconnect()
     }
   })
 
   return (
     <Tabs>
-      {[(<div label="view indents">
+      {[(<div label="view indents" key="defaultTab1" mykey="defaultTab1">
         <TransportView/>
       </div>),
-      (<div label="new indent">
+      (<div label="new indent" key="defaultTab2" mykey="defaultTab2">
         <NewIndentView/>
       </div>),
-      (<div label="notifications">
+      (<div label="notifications" key="defaultTab3" mykey="defaultTab3">
         <NotificationsPanel/>
       </div>),
-      (<div label="dev">
+      (<div label="dev" key="defaultTab4" mykey="defaultTab4">
         <DevPanel/>
-      </div>), ...tabs.map(v => (<DetailGenerator label={readDataStore(v[1]).name} removable="true" removeCallback={() => removeTab(v[0])} details={v} key={v[0]} />))]}
+      </div>), ...tabs.map(v => (<DetailGenerator mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={() => removeTab(v[0])} details={v} key={v[0]} />))]}
     </Tabs>
   );
 }
@@ -97,7 +95,7 @@ const NotificationsPanel = () => {
     }
     encountered[myData[i].internalUID] = true
   }
-  return (<ListFactory data={newData} generator={x => notificationItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>)
+  return (<ListFactory data={newData} generator={(x, index) => notificationItemGenerator(x, x.internalUID, ""+x.internalUID+index)} style={TransportViewStyle}/>)
 }
 
 const detailPersistentStore = {}
@@ -117,7 +115,7 @@ const DetailGenerator = ({details}) => {
     detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
     setData(detailPersistentStore[id])
   }}>
-  {statuses.map(val => (<option value={val}>{val}</option>))}
+  {statuses.map((val, index) => (<option key={index} value={val}>{val}</option>))}
   </select>
   <div onClick={() => {editData(index, detailPersistentStore[id])}}>Save</div>
   </div>
@@ -197,7 +195,6 @@ const FormFactory = ({fields, defaults}) => {
       myStates= [...myStates]
       myStates[i] = x
       setStates(myStates)
-      console.log(myStates)
     },field.initialData, field.name, field.friendlyName])
   }
   const initializeFields = () => {
@@ -217,9 +214,9 @@ const FormFactory = ({fields, defaults}) => {
   return (
   <div>
   <div>
-  {fieldStates.map(([text, setText, initialData, fieldName, friendlyName]) => {
+  {fieldStates.map(([text, setText, initialData, fieldName, friendlyName], index) => {
     return (
-      <div style={formItemStyle}>
+      <div style={formItemStyle} key={index}>
       <div>{friendlyName}</div>
       <textarea value={text} onChange={(event) => setText(event.target.value)}/>
       </div>
@@ -256,13 +253,13 @@ const TransportViewStyle = {
 
 const transportItemGenerator = (data, index) => {
   return (
-    <div onClick={() => addDetailTab(data, index)}>{"Title: "+data.name+" Start: "+data.startDateTime+" End: "+data.endDateTime+" Origin: "+data.origin+" Destination: "+data.destination+" POC: "+data.POC+" POC Number: "+data.POCPhone+" Status: "+data.status}</div>
+    <div key={data.internalUID} onClick={() => addDetailTab(data, index)}>{"Title: "+data.name+" Start: "+data.startDateTime+" End: "+data.endDateTime+" Origin: "+data.origin+" Destination: "+data.destination+" POC: "+data.POC+" POC Number: "+data.POCPhone+" Status: "+data.status}</div>
   )
 }
 
-const notificationItemGenerator = (data, index) => {
+const notificationItemGenerator = (data, index, key) => {
   return (
-    <div style={notificationItemStyle(data.latest)} onClick={() => addDetailTab(data, index)}>{data.title}</div>
+    <div key={key} style={notificationItemStyle(data.latest)} onClick={() => addDetailTab(data, index)}>{data.title}</div>
   )
 }
 
@@ -301,7 +298,7 @@ const getCallbackSystem = (dataSource) => {
   }
 
   const deregisterCallback = (id) => {
-    if (id > -1 && id < registerCallback.length) {
+    if (id > -1 && id < registeredCallbacks.length) {
       registeredCallbacks[id] = ()=>{}
     }
   }
@@ -315,7 +312,7 @@ const getCallbackSystem = (dataSource) => {
   return [registerCallback, deregisterCallback, notifyNewData]
 }
 
-var dataStore = [{name: "Mandai Crematorium Indent", internalUID: 0, startDateTime: "01/04/2020 12:34", endDateTime: "01/04/2020 23:45", POC: "lmao", POCPhone: "999", origin: "Hell Camp", destination: "Hellish Camp", status: "Pending"}, {name: "Mandai Crematorium Indent", internalUID: 1, startDateTime: "01/04/2020 12:34", endDateTime: "01/04/2020 23:45", POC: "lmao", POCPhone: "999", origin: "Hell Camp", destination: "Hellish Camp", status: "Pending"}, {name: "Mandai Crematorium Indent", internalUID: 2, startDateTime: "01/04/2020 12:34", endDateTime: "01/04/2020 23:45", POC: "lmao", POCPhone: "999", origin: "Hell Camp", destination: "Hellish Camp", status: "Pending"}]
+var dataStore = []
 
 const readNotifications = () => {
   return notificationsStore
@@ -325,7 +322,7 @@ const appendNotifications = (write) => {
   notificationsStore = [...notificationsStore, write]
 }
 
-var notificationsStore = [{title: "Mandai Crematorium Indent is now Pending", internalUID: 0}]
+var notificationsStore = []
 
 const statuses = ["Pending", "Submitted", "Recommended"]
 
@@ -339,7 +336,7 @@ const Tabs = ({children}) => {
     <div>
       <div style={TabsStyle}>
         {children.map((child, index) => {
-          const obj = {...child.props, onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1)}
+          const obj = {...child.props, onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1), key: child.props.mykey}
           return (<Tab {...obj}></Tab>)
         })}
       </div>
