@@ -178,13 +178,6 @@ const writeDataStore = async (internalUID, write) => {
   }
 }
 
-const mockNotificationSystem = ({internalUID, status}, {internalUID: oldUID, status: oldStatus}) => {
-  if (status !== oldStatus && internalUID === oldUID) {
-    appendNotifications({title: readDataStore(internalUID).name+" is now "+status, internalUID: internalUID})
-    notifyNewN()
-  }
-}
-
 const appendDataStore = async (write) => {
   currWriteToken++
   var resolve
