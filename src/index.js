@@ -51,7 +51,7 @@ const App = () => {
     return () => {
       socket.disconnect()
     }
-  })
+  }, [])
 
   return (
     <Tabs>
@@ -74,11 +74,11 @@ const App = () => {
 const DevPanel = () => {
   const [myServerURL, setServerURL] = React.useState(serverURL)
   const [response, setResponse] = React.useState("");
+  const myListener = data => {
+    setResponse(data)
+  }
 
   React.useEffect(() => {
-    const myListener = data => {
-      setResponse(data)
-    }
     socket.on("FromAPI", myListener);
     socket.emit("ToAPI", "Hello!")
     return () => {
@@ -99,11 +99,10 @@ const DevPanel = () => {
 const NotificationsPanel = () => {
   var myData = readNotifications()
   const [data, setData] = React.useState(myData)
-  var callbackID
   React.useEffect(() => {
-    callbackID = registerNotify(setData)
+    const callbackID = registerNotify(setData)
     return () => deregisterNotify(callbackID)
-  })
+  }, [])
   var newData = []
   const encountered = {}
   for (var i = myData.length-1; i > -1; i--) {
@@ -260,12 +259,11 @@ const NewIndentView = () => {
 
 const TransportView = () => {
   const [data, setData] = React.useState(readRange())
-  var callbackID
   React.useEffect(() => {
-    callbackID = registerCallback(setData)
+    const callbackID = registerCallback(setData)
     return () => deregisterCallback(callbackID)
-  })
-  return (<ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map(x => (<Material.TableCell>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>)
+  }, [])
+  return (<ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>)
 }
 
 const TransportViewStyle = {
@@ -381,14 +379,6 @@ const Tabs = ({children}) => {
   )
 }
 
-const TabsStyle = {
-  display: "flex",
-  flexDirection: "row",
-  backgroundColor: "rgb(240,240,240)",
-  overflow: "auto",
-  whiteSpace: "nowrap"
-}
-
 const Tab = ({label, onClick, active, removable, removeCallback}) => {
   return (
     <div>
@@ -398,25 +388,9 @@ const Tab = ({label, onClick, active, removable, removeCallback}) => {
   )
 }
 
-const TabWrapperStyle = {
-  padding: "10px 20px 0px 10px",
-}
-
 const TabCloseStyle = {
   font: "16px Arial, sans-serif",
   margin: "auto"
-}
-
-const TabStyle = (active) => {
-  return {
-    transition: "all 0.25s",
-    font: "25px Arial, sans-serif",
-    backgroundColor: active?"rgb(225,225,225)":"rgb(150,150,150)",
-    backgroundClip: "padding-box",
-    borderRadius: "15px 15px 0px 0px",
-    display: "flex",
-    flexDirection: "row"
-  }
 }
 
 const [registerCallback, deregisterCallback, notifyNewData] = getCallbackSystem(readRange)
