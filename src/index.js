@@ -238,7 +238,7 @@ const FormFactory = ({fields, defaults}) => {
   {fieldStates.map(([text, setText, initialData, fieldName, friendlyName], index) => {
     return (
       <div style={formItemStyle} key={index}>
-      <Material.TextField label={friendlyName} variant="outlined" value={text} onChange={(event) => setText(event.target.value)}/>
+      <Material.TextField multiline label={friendlyName} variant="outlined" value={text} onChange={(event) => setText(event.target.value)}/>
       </div>
     )
   })}
@@ -265,7 +265,7 @@ const TransportView = () => {
     callbackID = registerCallback(setData)
     return () => deregisterCallback(callbackID)
   })
-  return (<ListFactory data={data} generator={x => transportItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>)
+  return (<ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map(x => (<Material.TableCell>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>)
 }
 
 const TransportViewStyle = {
@@ -275,14 +275,14 @@ const TransportViewStyle = {
 const transportItemGenerator = (data, index) => {
   return (
     <Material.TableRow key={data.internalUID} onClick={() => addDetailTab(data, index)}>
-      <Material.TableCell>{"Title: "+data.name}</Material.TableCell>
-      <Material.TableCell>{"Start: "+data.startDateTime}</Material.TableCell>
-      <Material.TableCell>{"End: "+data.endDateTime}</Material.TableCell>
-      <Material.TableCell>{"Origin: "+data.origin}</Material.TableCell>
-      <Material.TableCell>{"Destination: "+data.destination}</Material.TableCell>
-      <Material.TableCell>{"POC: "+data.POC}</Material.TableCell>
-      <Material.TableCell>{"POC Number: "+data.POCPhone}</Material.TableCell>
-      <Material.TableCell>{"Status: "+data.status}</Material.TableCell>
+      <Material.TableCell>{data.name}</Material.TableCell>
+      <Material.TableCell>{data.startDateTime}</Material.TableCell>
+      <Material.TableCell>{data.endDateTime}</Material.TableCell>
+      <Material.TableCell>{data.origin}</Material.TableCell>
+      <Material.TableCell>{data.destination}</Material.TableCell>
+      <Material.TableCell>{data.POC}</Material.TableCell>
+      <Material.TableCell>{data.POCPhone}</Material.TableCell>
+      <Material.TableCell>{data.status}</Material.TableCell>
     </Material.TableRow>
   )
 }
@@ -313,11 +313,11 @@ const ListFactory = ({data, generator, style, header, tail}) => {
   return (
     <Material.TableContainer>
       <Material.Table>
+        {header}
         <Material.TableBody>
-          {header}
           {data.map(generator)}
-          {tail}
         </Material.TableBody>
+        {tail}
       </Material.Table>
     </Material.TableContainer>
   )
@@ -359,6 +359,8 @@ const statuses = ["Pending", "Submitted", "Recommended"]
 const formFields = [{name: "name", initialData: "", friendlyName: "Indent title"}, {name: "startDateTime", initialData: "", friendlyName: "Start time"}, {name: "endDateTime", initialData: "", friendlyName: "End time"}, {name: "origin", initialData: "", friendlyName: "Origin"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}]
 
 const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "Status"}]
+
+const displayFields = [...formFields, ...dataDefaults]
 
 const Tabs = ({children}) => {
   const [selTab, setSelTab] = React.useState(0);
