@@ -29,7 +29,7 @@ const App = () => {
   var [tabs, mySetTabs] = React.useState([])
   setTabs = mySetTabs
   React.useEffect(() => {
-    socket = socketIOClient(serverURL);
+    socket = socketIOClient(serverURL, {secure: true});
     socket.on("sendIndents", (indents, writeToken) => {
       if (writeToken !== undefined) {
         if (writeToken < ackWriteToken) {
