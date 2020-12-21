@@ -108,10 +108,10 @@ const NotificationsPanel = () => {
   const encountered = {}
   for (var i = myData.length-1; i > -1; i--) {
     if (encountered[myData[i].internalUID] === true) {
-      newData.unshift({...myData[i], latest: false})
+      newData.push({...myData[i], latest: false})
     }
     else {
-      newData.unshift({...myData[i], latest: true})
+      newData.push({...myData[i], latest: true})
     }
     encountered[myData[i].internalUID] = true
   }
@@ -394,9 +394,10 @@ const Tabs = ({children}) => {
 
 const Tab = ({label, onClick, active, removable, removeCallback}) => {
   return (
-    <div>
-      <Material.Tab label={(<span>{" "+label+" "} {removable ? (<Material.IconButton size="small" onClick={removeCallback}><Icons.Close/></Material.IconButton>) : undefined}</span>)} onClick={onClick}/>
-    </div>
+    <span>
+      <Material.Tab label={" "+label+" "} onClick={onClick}/>
+      {removable ? (<Material.IconButton size="small" onClick={removeCallback}><Icons.Close/></Material.IconButton>) : undefined}
+    </span>
   )
 }
 
