@@ -382,8 +382,7 @@ const Tabs = ({children}) => {
 const Tab = ({label, onClick, active, removable, removeCallback}) => {
   return (
     <div>
-      <Material.Tab label={" "+label+" "} onClick={onClick}/>
-      {removable ? (<span style={TabCloseStyle} onClick={removeCallback}>{"❌"}&nbsp;</span>) : undefined}
+      <Material.Tab label={(<span>{" "+label+" "} {removable ? (<Material.IconButton size="small" onClick={removeCallback}>{"❌"}</Material.IconButton>) : undefined}</span>)} onClick={onClick}/>
     </div>
   )
 }
