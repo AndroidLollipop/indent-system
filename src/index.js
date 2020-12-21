@@ -6,7 +6,7 @@ import socketIOClient from "socket.io-client";
 import * as Material from "@material-ui/core"
 import * as Icons from "@material-ui/icons"
 
-var serverURL = "https://murmuring-ocean-38436.herokuapp.com:80/"
+var serverURL = "https://murmuring-ocean-38436.herokuapp.com/"
 
 var setTabs
 var additionalTabs = []
