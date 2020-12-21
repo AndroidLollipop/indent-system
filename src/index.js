@@ -4,6 +4,7 @@ import * as ReactDOM from 'react-dom'
 import socketIOClient from "socket.io-client";
 
 import * as Material from "@material-ui/core"
+import * as Icons from "@material-ui/icons"
 
 var serverURL = "http://127.0.0.1:4001"
 
@@ -394,7 +395,7 @@ const Tabs = ({children}) => {
 const Tab = ({label, onClick, active, removable, removeCallback}) => {
   return (
     <div>
-      <Material.Tab label={(<span>{" "+label+" "} {removable ? (<Material.IconButton size="small" onClick={removeCallback}>{"❌"}</Material.IconButton>) : undefined}</span>)} onClick={onClick}/>
+      <Material.Tab label={(<span>{" "+label+" "} {removable ? (<Material.IconButton size="small" onClick={removeCallback}><Icons.Close/></Material.IconButton>) : undefined}</span>)} onClick={onClick}/>
     </div>
   )
 }
