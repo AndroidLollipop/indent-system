@@ -285,7 +285,7 @@ const transportItemGenerator = (data, index) => {
 
 const detailItemGenerator = (data, index) => {
   return (
-    <Material.TableRow key={data.internalUID} onClick={() => addDetailTab(data, index)}>
+    <Material.TableRow key={data.internalUID}>
       <Material.TableCell>{data.name}</Material.TableCell>
       <Material.TableCell>{data.startDateTime}</Material.TableCell>
       <Material.TableCell>{data.endDateTime}</Material.TableCell>
