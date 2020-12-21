@@ -127,9 +127,7 @@ const DetailGenerator = ({details}) => {
   const [data, setData] = React.useState(detailPersistentStore[id])
   return (
   <div>
-  <Material.Typography>
-  {"Start: "+data.startDateTime+" End: "+data.endDateTime+" Origin: "+data.origin+" Destination: "+data.destination+" POC: "+data.POC+" POC Number: "+data.POCPhone}
-  </Material.Typography>
+  <ListFactory header={(<Material.TableHead><Material.TableRow>{formFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
   <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
     detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
     setData(detailPersistentStore[id])
@@ -281,6 +279,20 @@ const transportItemGenerator = (data, index) => {
       <Material.TableCell>{data.POC}</Material.TableCell>
       <Material.TableCell>{data.POCPhone}</Material.TableCell>
       <Material.TableCell>{data.status}</Material.TableCell>
+    </Material.TableRow>
+  )
+}
+
+const detailItemGenerator = (data, index) => {
+  return (
+    <Material.TableRow key={data.internalUID} onClick={() => addDetailTab(data, index)}>
+      <Material.TableCell>{data.name}</Material.TableCell>
+      <Material.TableCell>{data.startDateTime}</Material.TableCell>
+      <Material.TableCell>{data.endDateTime}</Material.TableCell>
+      <Material.TableCell>{data.origin}</Material.TableCell>
+      <Material.TableCell>{data.destination}</Material.TableCell>
+      <Material.TableCell>{data.POC}</Material.TableCell>
+      <Material.TableCell>{data.POCPhone}</Material.TableCell>
     </Material.TableRow>
   )
 }
