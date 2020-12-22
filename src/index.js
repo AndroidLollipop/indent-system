@@ -401,7 +401,7 @@ const Tabs = ({children, selTab, setSelTab}) => {
 const Tab = ({label, onClick, active, removable, removeCallback}) => {
   return (
     <span>
-      <Material.Tab label={" "+label+" "} onClick={onClick}/>
+      <Material.Tab label={label} onClick={onClick}/>
       {removable ? (<Material.IconButton size="small" onClick={removeCallback}><Icons.Close style={{fill: "red"}}/></Material.IconButton>) : undefined}
     </span>
   )
