@@ -53,17 +53,18 @@ const App = () => {
       socket.disconnect()
     }
   }, [])
+  const [selTab, setSelTab] = React.useState(0);
 
   return (
-    <Tabs>
+    <Tabs selTab={selTab} setSelTab={setSelTab}>
       {[(<div label="view indents" key="defaultTab1" mykey="defaultTab1">
-        <TransportView/>
+        <TransportView setSelTab={setSelTab}/>
       </div>),
       (<div label="new indent" key="defaultTab2" mykey="defaultTab2">
         <NewIndentView/>
       </div>),
       (<div label="notifications" key="defaultTab3" mykey="defaultTab3">
-        <NotificationsPanel/>
+        <NotificationsPanel setSelTab={setSelTab}/>
       </div>),
       (<div label="dev" key="defaultTab4" mykey="defaultTab4">
         <DevPanel/>
@@ -97,7 +98,7 @@ const DevPanel = () => {
   </div>)
 }
 
-const NotificationsPanel = () => {
+const NotificationsPanel = ({setSelTab}) => {
   var myData = readNotifications()
   const [data, setData] = React.useState(myData)
   React.useEffect(() => {
@@ -115,7 +116,7 @@ const NotificationsPanel = () => {
     }
     encountered[myData[i].internalUID] = true
   }
-  return (<ListFactory data={newData} generator={(x, index) => notificationItemGenerator(x, x.internalUID, ""+x.internalUID+index)} style={TransportViewStyle}/>)
+  return (<ListFactory data={newData} generator={(x, index) => notificationItemGenerator(x, x.internalUID, ""+x.internalUID+index, setSelTab)} style={TransportViewStyle}/>)
 }
 
 const detailPersistentStore = {}
@@ -256,22 +257,25 @@ const NewIndentView = () => {
   return (<div style={TransportViewStyle}><FormFactory fields={formFields} defaults={dataDefaults}/></div>)
 }
 
-const TransportView = () => {
+const TransportView = ({setSelTab}) => {
   const [data, setData] = React.useState(readRange())
   React.useEffect(() => {
     const callbackID = registerCallback(setData)
     return () => deregisterCallback(callbackID)
   }, [])
-  return (<ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>)
+  return (<ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>)
 }
 
 const TransportViewStyle = {
   font: "20px Arial, sans-serif"
 }
 
-const transportItemGenerator = (data, index) => {
+const transportItemGenerator = (data, index, setSelTab) => {
   return (
-    <Material.TableRow key={data.internalUID} onClick={() => addDetailTab(data, index)}>
+    <Material.TableRow key={data.internalUID} onClick={() => {
+      addDetailTab(data, index)
+      setSelTab(Infinity)
+    }}>
       <Material.TableCell>{data.name}</Material.TableCell>
       <Material.TableCell>{data.startDateTime}</Material.TableCell>
       <Material.TableCell>{data.endDateTime}</Material.TableCell>
@@ -298,9 +302,12 @@ const detailItemGenerator = (data, index) => {
   )
 }
 
-const notificationItemGenerator = (data, index, key) => {
+const notificationItemGenerator = (data, index, key, setSelTab) => {
   return (
-    <Material.TableRow key={key} onClick={() => addDetailTab(data, index)}><Material.TableCell style={notificationItemStyle(data.latest)} align="center">{data.title}</Material.TableCell></Material.TableRow>
+    <Material.TableRow key={key} onClick={() => {
+      addDetailTab(data, index)
+      setSelTab(Infinity)
+    }}><Material.TableCell style={notificationItemStyle(data.latest)} align="center">{data.title}</Material.TableCell></Material.TableRow>
   )
 }
 
@@ -373,8 +380,7 @@ const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "St
 
 const displayFields = [...formFields, ...dataDefaults]
 
-const Tabs = ({children}) => {
-  const [selTab, setSelTab] = React.useState(0);
+const Tabs = ({children, selTab, setSelTab}) => {
   return (
     <div>
       <Material.AppBar position="static">
