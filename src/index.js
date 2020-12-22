@@ -82,9 +82,7 @@ const DevPanel = () => {
 
   React.useEffect(() => {
     socket.on("FromAPI", myListener);
-    socket.emit("ToAPI", "Hello!")
     return () => {
-      socket.emit("ToAPI", "Goodbye!")
       socket.off("FromAPI", myListener)
     }
   }, []);
