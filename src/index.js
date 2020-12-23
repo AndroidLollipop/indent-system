@@ -68,7 +68,13 @@ const App = () => {
       </div>),
       (<div label="dev" key="defaultTab4" mykey="defaultTab4">
         <DevPanel/>
-      </div>), ...tabs.map(v => (<DetailGenerator mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={() => removeTab(v[0])} details={v} key={v[0]} />))]}
+      </div>), ...tabs.map((v, i) => (<DetailGenerator mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={(index, length) => {
+        removeTab(v[0])
+        const currSelTab = Math.min(selTab, length-1)
+        if (currSelTab > index) {
+          setSelTab(currSelTab-1)
+        }
+      }} details={v} key={v[0]} />))]}
     </Tabs>
   );
 }
@@ -384,7 +390,7 @@ const Tabs = ({children, selTab, setSelTab}) => {
       <Material.AppBar position="static">
         <Material.Tabs variant="scrollable" value={Math.min(selTab, children.length-1)}>
           {children.map((child, index) => {
-            const obj = {...child.props, onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1), key: child.props.mykey}
+            const obj = {...child.props, removeCallback: () => child.props.removeCallback(index, children.length), onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1), key: child.props.mykey}
             return (<Tab {...obj}></Tab>)
           })}
         </Material.Tabs>
@@ -398,10 +404,9 @@ const Tabs = ({children, selTab, setSelTab}) => {
 
 const Tab = ({label, onClick, active, removable, removeCallback}) => {
   return (
-    <span>
-      <Material.Tab label={label} onClick={onClick}/>
+    <Material.Tab style={{padding: 0}} disableRipple selected label={(<span><Material.Tab label={label} onClick={onClick} selected={active ? true : null}/>
       {removable ? (<Material.IconButton size="small" onClick={removeCallback}><Icons.Close style={{fill: "red"}}/></Material.IconButton>) : undefined}
-    </span>
+      </span>)}/>
   )
 }
 
