@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.js": "/indent-system/static/js/main.f802788e.chunk.js",
-    "main.js.map": "/indent-system/static/js/main.f802788e.chunk.js.map",
+    "main.js": "/indent-system/static/js/main.9e7e8524.chunk.js",
+    "main.js.map": "/indent-system/static/js/main.9e7e8524.chunk.js.map",
     "runtime-main.js": "/indent-system/static/js/runtime-main.e92cea01.js",
     "runtime-main.js.map": "/indent-system/static/js/runtime-main.e92cea01.js.map",
-    "static/js/2.34e7075c.chunk.js": "/indent-system/static/js/2.34e7075c.chunk.js",
-    "static/js/2.34e7075c.chunk.js.map": "/indent-system/static/js/2.34e7075c.chunk.js.map",
+    "static/js/2.187faeb8.chunk.js": "/indent-system/static/js/2.187faeb8.chunk.js",
+    "static/js/2.187faeb8.chunk.js.map": "/indent-system/static/js/2.187faeb8.chunk.js.map",
     "index.html": "/indent-system/index.html",
-    "static/js/2.34e7075c.chunk.js.LICENSE.txt": "/indent-system/static/js/2.34e7075c.chunk.js.LICENSE.txt"
+    "static/js/2.187faeb8.chunk.js.LICENSE.txt": "/indent-system/static/js/2.187faeb8.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.e92cea01.js",
-    "static/js/2.34e7075c.chunk.js",
-    "static/js/main.f802788e.chunk.js"
+    "static/js/2.187faeb8.chunk.js",
+    "static/js/main.9e7e8524.chunk.js"
   ]
 }
