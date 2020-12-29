@@ -6,6 +6,9 @@ import socketIOClient from "socket.io-client";
 import * as Material from "@material-ui/core"
 import * as Icons from "@material-ui/icons"
 
+import appLogo from "./resources/logo.jpg"
+import sir5logo from "./resources/5sirlogo.jpg"
+
 var serverURL = "https://murmuring-ocean-38436.herokuapp.com/"
 
 var setTabs
@@ -56,23 +59,27 @@ const App = () => {
   const [selTab, setSelTab] = React.useState(0);
 
   return (
-    <Tabs selTab={selTab} setSelTab={setSelTab}>
-      {[(<div label="view indents" key="defaultTab1" mykey="defaultTab1">
-        <TransportView setSelTab={setSelTab}/>
-      </div>),
-      (<div label="new indent" key="defaultTab2" mykey="defaultTab2">
-        <NewIndentView/>
-      </div>),
-      (<div label="notifications" key="defaultTab3" mykey="defaultTab3">
-        <NotificationsPanel setSelTab={setSelTab}/>
-      </div>), ...tabs.map((v, i) => (<DetailGenerator mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={(index, length) => {
-        removeTab(v[0])
-        const currSelTab = Math.min(selTab, length-1)
-        if (currSelTab > index) {
-          setSelTab(currSelTab-1)
-        }
-      }} details={v} key={v[0]} />))]}
-    </Tabs>
+    <div>
+      <Tabs selTab={selTab} setSelTab={setSelTab}>
+        {[(<div label="view indents" key="defaultTab1" mykey="defaultTab1">
+          <TransportView setSelTab={setSelTab}/>
+        </div>),
+        (<div label="new indent" key="defaultTab2" mykey="defaultTab2">
+          <NewIndentView/>
+        </div>),
+        (<div label="notifications" key="defaultTab3" mykey="defaultTab3">
+          <NotificationsPanel setSelTab={setSelTab}/>
+        </div>), ...tabs.map((v, i) => (<DetailGenerator mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={(index, length) => {
+          removeTab(v[0])
+          const currSelTab = Math.min(selTab, length-1)
+          if (currSelTab > index) {
+            setSelTab(currSelTab-1)
+          }
+        }} details={v} key={v[0]} />))]}
+      </Tabs>
+      <div style={{height: "6px"}}/>
+      <img src={sir5logo} width="192px"/>
+    </div>
   );
 }
 
@@ -382,14 +389,15 @@ const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "St
 const displayFields = [...formFields, ...dataDefaults]
 
 const Tabs = ({children, selTab, setSelTab}) => {
+  const pre = [(<div style={{height: "48px", width: "48px"}}><img src={appLogo} height="48px" width="48px"/></div>)]
   return (
     <div>
       <Material.AppBar position="static">
-        <Material.Tabs variant="scrollable" value={Math.min(selTab, children.length-1)}>
-          {children.map((child, index) => {
+        <Material.Tabs variant="scrollable" value={Math.min(selTab, children.length-1)+pre.length}>
+          {[...pre , ...children.map((child, index) => {
             const obj = {...child.props, removeCallback: () => child.props.removeCallback(index, children.length), onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1), key: child.props.mykey}
             return (<Tab {...obj}></Tab>)
-          })}
+          })]}
         </Material.Tabs>
       </Material.AppBar>
       <div>
