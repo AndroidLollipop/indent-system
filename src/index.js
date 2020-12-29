@@ -407,7 +407,7 @@ const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "St
 const displayFields = [...formFields, ...dataDefaults]
 
 const Tabs = ({children, selTab, setSelTab}) => {
-  const pre = [(<div style={{height: "48px", width: "48px"}}><img src={appLogo} height="48px" width="48px"/></div>)]
+  const pre = [(<div style={{height: "48px", width: "48px", overflow:"hidden"}}><img src={appLogo} height="100%" width="48px"/></div>)]
   return (
     <div>
       <Material.AppBar position="static">
