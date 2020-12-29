@@ -124,7 +124,14 @@ const NotificationsPanel = ({setSelTab}) => {
     }
     encountered[myData[i].internalUID] = true
   }
-  return (<ListFactory data={newData} generator={(x, index) => notificationItemGenerator(x, x.internalUID, ""+x.internalUID+index, setSelTab)} style={TransportViewStyle}/>)
+  return (
+    <div>
+      <div style={{height: "6px"}}/>
+      <Material.Paper>
+        <ListFactory data={newData} generator={(x, index) => notificationItemGenerator(x, x.internalUID, ""+x.internalUID+index, setSelTab)} style={TransportViewStyle}/>
+      </Material.Paper>
+    </div>
+  )
 }
 
 const detailPersistentStore = {}
@@ -137,14 +144,18 @@ const DetailGenerator = ({details}) => {
   const [data, setData] = React.useState(detailPersistentStore[id])
   return (
   <div>
-  <ListFactory header={(<Material.TableHead><Material.TableRow>{formFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
-  <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
-    detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
-    setData(detailPersistentStore[id])
-  }}>
-  {statuses.map((val, index) => (<option key={index} value={val}>{val}</option>))}
-  </Material.Select>
-  <Material.Button variant="outlined" onClick={() => {editData(index, detailPersistentStore[id])}}>Save</Material.Button>
+    <div style={{height:"6px"}}/>
+    <Material.Paper>
+      <ListFactory header={(<Material.TableHead><Material.TableRow>{formFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
+    </Material.Paper>
+    <div style={{height:"6px"}}/>
+    <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
+      detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
+      setData(detailPersistentStore[id])
+    }}>
+    {statuses.map((val, index) => (<option key={index} value={val}>{val}</option>))}
+    </Material.Select>
+    <Material.Button variant="outlined" onClick={() => {editData(index, detailPersistentStore[id])}}>Save</Material.Button>
   </div>
   )
 }
@@ -271,7 +282,14 @@ const TransportView = ({setSelTab}) => {
     const callbackID = registerCallback(setData)
     return () => deregisterCallback(callbackID)
   }, [])
-  return (<ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>)
+  return (
+    <div>
+      <div style={{height: "6px"}}/>
+      <Material.Paper>
+        <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
+      </Material.Paper>
+    </div>
+  )
 }
 
 const TransportViewStyle = {
