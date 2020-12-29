@@ -65,9 +65,6 @@ const App = () => {
       </div>),
       (<div label="notifications" key="defaultTab3" mykey="defaultTab3">
         <NotificationsPanel setSelTab={setSelTab}/>
-      </div>),
-      (<div label="dev" key="defaultTab4" mykey="defaultTab4">
-        <DevPanel/>
       </div>), ...tabs.map((v, i) => (<DetailGenerator mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={(index, length) => {
         removeTab(v[0])
         const currSelTab = Math.min(selTab, length-1)
