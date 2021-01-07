@@ -127,7 +127,7 @@ const NotificationsPanel = ({setSelTab}) => {
   return (
     <div>
       <div style={{height: "6px"}}/>
-      <Material.Paper>
+      <Material.Paper square>
         <ListFactory data={newData} generator={(x, index) => notificationItemGenerator(x, x.internalUID, ""+x.internalUID+index, setSelTab)} style={TransportViewStyle}/>
       </Material.Paper>
     </div>
@@ -145,7 +145,7 @@ const DetailGenerator = ({details}) => {
   return (
   <div>
     <div style={{height:"6px"}}/>
-    <Material.Paper>
+    <Material.Paper square>
       <ListFactory header={(<Material.TableHead><Material.TableRow>{formFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
     </Material.Paper>
     <div style={{height:"6px"}}/>
@@ -285,7 +285,7 @@ const TransportView = ({setSelTab}) => {
   return (
     <div>
       <div style={{height: "6px"}}/>
-      <Material.Paper>
+      <Material.Paper square>
         <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
       </Material.Paper>
     </div>
