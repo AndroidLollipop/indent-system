@@ -234,7 +234,7 @@ const FormFactory = ({fields, defaults}) => {
       myStates = [...myStates]
       myStates[i] = x
       setStates(myStates)
-    },field.initialData, field.name, field.friendlyName])
+    },field.initialData, field.name, field.friendlyName, field.fieldType])
   }
   const initializeFields = () => {
     setStates(fields.map(x => x.initialData))
@@ -244,8 +244,9 @@ const FormFactory = ({fields, defaults}) => {
     for (const {name, initialData} of defaults) {
       constitutedObject[name] = initialData
     }
-    for (const [text, setText, initialData, fieldName] of fieldStates) {
-      constitutedObject[fieldName] = text
+    for (const [text, setText, initialData, fieldName, fieldType] of fieldStates) {
+      const normalizer = normalizers[fieldType]
+      constitutedObject[fieldName] = normalizer ? normalizer(text) : text
     }
     submitForm(constitutedObject)
     initializeFields()
@@ -253,10 +254,23 @@ const FormFactory = ({fields, defaults}) => {
   return (
   <form noValidate>
   <div>
-  {fieldStates.map(([text, setText, initialData, fieldName, friendlyName], index) => {
+  {fieldStates.map(([text, setText, initialData, fieldName, friendlyName, fieldType], index) => {
     return (
       <div style={formItemStyle} key={index}>
-      <Material.TextField multiline label={friendlyName} variant="outlined" value={text} onChange={(event) => setText(event.target.value)}/>
+      {fieldType === "datetime" ?
+      (<Material.TextField
+        id="datetime-local"
+        fullWidth={true}
+        label={friendlyName}
+        type="datetime-local"
+        variant="outlined"
+        onChange={(event) => setText(event.target.value)}
+        InputLabelProps={{
+          shrink: true,
+        }}
+      />)
+      :(<Material.TextField fullWidth={true} multiline label={friendlyName} variant="outlined" value={text} onChange={(event) => setText(event.target.value)} InputLabelProps={{shrink: true,}}/>)
+      }
       </div>
     )
   })}
@@ -266,6 +280,18 @@ const FormFactory = ({fields, defaults}) => {
   )
 }
 
+const normalizers = {
+  "datetime": x => {
+    try {
+      console.log(x.slice(8, 10) + "/" + x.slice(5, 7) + "/" + x.slice(0, 4) + " " + x.slice(11, 16))
+      return x.slice(8, 10) + "/" + x.slice(5, 7) + "/" + x.slice(0, 4) + " " + x.slice(11, 16)
+    }
+    catch {
+      return x
+    }
+  }
+}
+
 const formItemStyle = {
   display: "flex",
   justifyContent: "center",
@@ -273,7 +299,7 @@ const formItemStyle = {
 }
 
 const NewIndentView = () => {
-  return (<div style={TransportViewStyle}><FormFactory fields={formFields} defaults={dataDefaults}/></div>)
+  return (<div style={TransportViewStyle}><div style={{height: "6px"}}/><FormFactory fields={formFields} defaults={dataDefaults}/></div>)
 }
 
 const TransportView = ({setSelTab}) => {
@@ -400,7 +426,7 @@ var notificationsStore = []
 
 const statuses = ["Pending", "Submitted", "Recommended"]
 
-const formFields = [{name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time"}, {name: "endDateTime", initialData: "", friendlyName: "End time"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}]
+const formFields = [{name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}]
 
 const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "Status"}]
 
