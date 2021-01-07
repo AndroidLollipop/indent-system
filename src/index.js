@@ -283,11 +283,13 @@ const FormFactory = ({fields, defaults}) => {
 const normalizers = {
   "datetime": x => {
     try {
-      return x.slice(8, 10) + "/" + x.slice(5, 7) + "/" + x.slice(0, 4) + " " + x.slice(11, 16)
+      if (x.length > 0) {
+        return x.slice(8, 10) + "/" + x.slice(5, 7) + "/" + x.slice(0, 4) + " " + x.slice(11, 16)
+      }
     }
     catch {
-      return x
     }
+    return x
   }
 }
 
