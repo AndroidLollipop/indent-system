@@ -244,7 +244,7 @@ const FormFactory = ({fields, defaults}) => {
     for (const {name, initialData} of defaults) {
       constitutedObject[name] = initialData
     }
-    for (const [text, setText, initialData, fieldName, fieldType] of fieldStates) {
+    for (const [text, setText, initialData, fieldName, friendlyName, fieldType] of fieldStates) {
       const normalizer = normalizers[fieldType]
       constitutedObject[fieldName] = normalizer ? normalizer(text) : text
     }
@@ -283,7 +283,6 @@ const FormFactory = ({fields, defaults}) => {
 const normalizers = {
   "datetime": x => {
     try {
-      console.log(x.slice(8, 10) + "/" + x.slice(5, 7) + "/" + x.slice(0, 4) + " " + x.slice(11, 16))
       return x.slice(8, 10) + "/" + x.slice(5, 7) + "/" + x.slice(0, 4) + " " + x.slice(11, 16)
     }
     catch {
