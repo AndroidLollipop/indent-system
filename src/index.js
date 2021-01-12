@@ -336,6 +336,8 @@ const transportItemGenerator = (data, index, setSelTab) => {
       <Material.TableCell>{data.destination}</Material.TableCell>
       <Material.TableCell>{data.POC}</Material.TableCell>
       <Material.TableCell>{data.POCPhone}</Material.TableCell>
+      <Material.TableCell>{data.vehicles}</Material.TableCell>
+      <Material.TableCell>{data.notes}</Material.TableCell>
       <Material.TableCell>{data.status}</Material.TableCell>
     </Material.TableRow>
   )
@@ -351,6 +353,8 @@ const detailItemGenerator = (data, index) => {
       <Material.TableCell>{data.destination}</Material.TableCell>
       <Material.TableCell>{data.POC}</Material.TableCell>
       <Material.TableCell>{data.POCPhone}</Material.TableCell>
+      <Material.TableCell>{data.vehicles}</Material.TableCell>
+      <Material.TableCell>{data.notes}</Material.TableCell>
     </Material.TableRow>
   )
 }
