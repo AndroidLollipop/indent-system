@@ -43,11 +43,11 @@ const App = () => {
           pendingWrites[writeToken]()
         }
       }
-      dataStore = [...indents]
+      dataStore = [...indents].reverse()
       notifyNewData()
     })
     socket.on("sendNotifications", (notifications) => {
-      notificationsStore = [...notifications]
+      notificationsStore = [...notifications].reverse()
       notifyNewN()
     })
     socket.emit("requestIndents", "")
@@ -115,7 +115,7 @@ const NotificationsPanel = ({setSelTab}) => {
   }, [])
   var newData = []
   const encountered = {}
-  for (var i = myData.length-1; i > -1; i--) {
+  for (var i = 0; i < myData.length; i++) {
     if (encountered[myData[i].internalUID] === true) {
       newData.push({...myData[i], latest: false})
     }
