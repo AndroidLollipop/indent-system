@@ -1,9 +1,9 @@
+html {
+  background:#4154B3;
+}
 body {
   padding:0;
   margin:0;
-  background:#4154B3;
-}
-#bodycontainer {
   background:#FFFFFF;
   position:absolute;
   left:0;
