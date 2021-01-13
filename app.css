@@ -4,10 +4,8 @@ body {
 }
 #statusbar {
   background:#4154B3;
-  position:absolute;
   left:0;
   top:0;
   width:100%;
-  height:1px;
   padding: env(safe-area-inset-top);
 }
