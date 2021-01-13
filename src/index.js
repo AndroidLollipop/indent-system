@@ -223,9 +223,13 @@ const submitForm = async (data) => {
   }
 }
 
-const FormFactory = ({fields, defaults}) => {
+const FormFactory = ({fields, defaults, formPersistentStore}) => {
   var fieldStates = []
-  const [states, setStates] = React.useState(fields.map(x => x.initialData))
+  var myPersistentStore = formPersistentStore === undefined ? {} : formPersistentStore
+  if (myPersistentStore.data === undefined) {
+    myPersistentStore.data = fields.map(x => x.initialData)
+  }
+  const [states, setStates] = React.useState(myPersistentStore.data)
   var myStates = states
   for (var index = 0; index < fields.length; index++) {
     const i = index
@@ -233,11 +237,14 @@ const FormFactory = ({fields, defaults}) => {
     fieldStates.push([states[i], x => {
       myStates = [...myStates]
       myStates[i] = x
+      myPersistentStore.data = myStates
       setStates(myStates)
     },field.initialData, field.name, field.friendlyName, field.fieldType])
   }
   const initializeFields = () => {
-    setStates(fields.map(x => x.initialData))
+    const initializedFields = fields.map(x => x.initialData)
+    myPersistentStore.data = initializedFields
+    setStates(initializedFields)
   }
   const submit = () => {
     var constitutedObject = {}
@@ -299,8 +306,10 @@ const formItemStyle = {
   padding: "5px"
 }
 
+const newIndentPersistentStore = {}
+
 const NewIndentView = () => {
-  return (<div style={TransportViewStyle}><div style={{height: "6px"}}/><FormFactory fields={formFields} defaults={dataDefaults}/></div>)
+  return (<div style={TransportViewStyle}><div style={{height: "6px"}}/><FormFactory fields={formFields} defaults={dataDefaults} formPersistentStore={newIndentPersistentStore}/></div>)
 }
 
 const TransportView = ({setSelTab}) => {
