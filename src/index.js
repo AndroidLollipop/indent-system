@@ -450,7 +450,7 @@ const Tabs = ({children, selTab, setSelTab}) => {
   const pre = [(<Material.Tab style={{opacity: 1, minWidth: 0, minHeight:0, padding: 0}} disableRipple selected label={<div style={{height: "48px", width: "48px"}}><img src={appLogo} height="48px" width="48px"/></div>}/>)]
   return (
     <div>
-      <Material.AppBar position="static">
+      <Material.AppBar position="sticky" style={{top: "env(safe-area-inset-top)"}}>
         <Material.Tabs variant="scrollable" value={Math.min(selTab, children.length-1)+pre.length}>
           {[...pre , ...children.map((child, index) => {
             const obj = {...child.props, removeCallback: () => child.props.removeCallback(index, children.length), onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1), key: child.props.mykey}
