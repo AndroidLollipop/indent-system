@@ -307,7 +307,10 @@ const normalizers = {
 const formItemStyle = {
   display: "flex",
   justifyContent: "center",
-  padding: "5px"
+  paddingLeft: "12px",
+  paddingRight: "12px",
+  paddingTop: "5px",
+  paddingBottom: "7px"
 }
 
 const newIndentPersistentStore = {}
@@ -356,13 +359,15 @@ const TransportView = ({setSelTab}) => {
   return (
     <div>
       <div style={{height: "12px"}}/>
-      <SearchBar
-        value={search}
-        onChange={onChange}
-        onCancelSearch={() => onChange("")}
-        onRequestSearch={()=>{}}
-        style={{width: "90%", margin: "auto", maxWidth: "1000px"}}
-        />
+      <div style={{marginLeft: "12px", marginRight: "12px"}}>
+        <SearchBar
+          value={search}
+          onChange={onChange}
+          onCancelSearch={() => onChange("")}
+          onRequestSearch={()=>{}}
+          style={{margin: "auto", maxWidth: "1000px"}}
+          />
+      </div>
       <div style={{height: "12px"}}/>
       <Material.Paper square>
         <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
