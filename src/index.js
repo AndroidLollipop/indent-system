@@ -7,6 +7,8 @@ import * as Material from "@material-ui/core"
 import * as Icons from "@material-ui/icons"
 import SearchBar from "material-ui-search-bar"
 
+import { DataGrid } from "@material-ui/data-grid"
+
 import appLogo from "./resources/logo.jpg"
 import sir5logo from "./resources/5sirlogo.jpg"
 
@@ -353,6 +355,14 @@ const TransportView = ({setSelTab}) => {
       last.current = null
     }, DEBOUNCE_PERIOD)
   }
+  const gridWrapperRef = React.useRef(null)
+  React.useLayoutEffect(() => {
+    const gridDiv = gridWrapperRef.current
+    if (gridDiv) {
+      const gridEl = gridDiv.querySelector("div")
+      gridEl.style.height = ""
+    }
+  })
   return (
     <div>
       <div style={{height: "12px"}}/>
@@ -364,9 +374,14 @@ const TransportView = ({setSelTab}) => {
         style={{width: "90%", margin: "auto", maxWidth: "1000px"}}
         />
       <div style={{height: "12px"}}/>
-      <Material.Paper square>
-        <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
-      </Material.Paper>
+      <div style={{ height: "max-content" }} ref={gridWrapperRef}>
+        <DataGrid 
+          rows={data.map((x, index) => ({...x, id: index}))}
+          columns={displayFields.map(x => ({field: x.name, headerName: x.friendlyName}))}
+          autoHeight={true}
+          style={{ height: "max-content" }}
+          />
+      </div>
     </div>
   )
 }
