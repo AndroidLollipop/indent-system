@@ -80,7 +80,7 @@ const App = () => {
           }
         }} details={v} key={v[0]} />))]}
       </Tabs>
-      <div style={{height: "6px"}}/>
+      <div style={{height: "12px"}}/>
       <img src={sir5logo} width="192px"/>
     </div>
   );
@@ -129,7 +129,7 @@ const NotificationsPanel = ({setSelTab}) => {
   }
   return (
     <div>
-      <div style={{height: "6px"}}/>
+      <div style={{height: "12px"}}/>
       <Material.Paper square>
         <ListFactory data={newData} generator={(x, index) => notificationItemGenerator(x, x.internalUID, ""+x.internalUID+index, setSelTab)} style={TransportViewStyle}/>
       </Material.Paper>
@@ -147,11 +147,11 @@ const DetailGenerator = ({details}) => {
   const [data, setData] = React.useState(detailPersistentStore[id])
   return (
   <div>
-    <div style={{height:"6px"}}/>
+    <div style={{height:"12px"}}/>
     <Material.Paper square>
       <ListFactory header={(<Material.TableHead><Material.TableRow>{formFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
     </Material.Paper>
-    <div style={{height:"6px"}}/>
+    <div style={{height:"12px"}}/>
     <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
       detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
       setData(detailPersistentStore[id])
@@ -312,7 +312,7 @@ const formItemStyle = {
 const newIndentPersistentStore = {}
 
 const NewIndentView = () => {
-  return (<div style={TransportViewStyle}><div style={{height: "6px"}}/><FormFactory fields={formFields} defaults={dataDefaults} formPersistentStore={newIndentPersistentStore}/></div>)
+  return (<div style={TransportViewStyle}><div style={{height: "12px"}}/><FormFactory fields={formFields} defaults={dataDefaults} formPersistentStore={newIndentPersistentStore}/></div>)
 }
 
 const DEBOUNCE_PERIOD = 100
@@ -362,7 +362,7 @@ const TransportView = ({setSelTab}) => {
         onRequestSearch={()=>{}}
         style={{width: "90%", margin: "auto"}}
         />
-      <div style={{height: "6px"}}/>
+      <div style={{height: "12px"}}/>
       <Material.Paper square>
         <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
       </Material.Paper>
