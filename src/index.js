@@ -278,8 +278,9 @@ const FormFactory = ({fields, defaults, formPersistentStore}) => {
         InputLabelProps={{
           shrink: true,
         }}
+        style={{maxWidth: "1000px"}}
       />)
-      :(<Material.TextField fullWidth={true} multiline label={friendlyName} variant="outlined" value={text} onChange={(event) => setText(event.target.value)} InputLabelProps={{shrink: true,}}/>)
+      :(<Material.TextField fullWidth={true} multiline label={friendlyName} variant="outlined" value={text} onChange={(event) => setText(event.target.value)} InputLabelProps={{shrink: true,}} style={{maxWidth: "1000px"}}/>)
       }
       </div>
     )
@@ -360,7 +361,7 @@ const TransportView = ({setSelTab}) => {
         onChange={onChange}
         onCancelSearch={() => onChange("")}
         onRequestSearch={()=>{}}
-        style={{width: "90%", margin: "auto"}}
+        style={{width: "90%", margin: "auto", maxWidth: "1000px"}}
         />
       <div style={{height: "12px"}}/>
       <Material.Paper square>
