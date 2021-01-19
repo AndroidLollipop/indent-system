@@ -4,7 +4,6 @@ var computeTfIdfs = (tagcollection, tf_, idf) => { //tf-idf implemented directly
   //if we are brave and adventurous we can try using delta updates and delta'ing the tfidf cache
   for (var i = 0; i < tagcollection.length; i++){
     var tags = Object.values(tagcollection[i]).map(x => x.toString().trim().toLowerCase().split(/\b\s+/)).flat()
-    console.log(tags)
     var adda = {}
     for (var j = 0; j < tags.length; j++){
       if (!adda[tags[j]]){
@@ -34,8 +33,6 @@ var makeRanker = (data) => {
   var tf_ = []
   return (terms) => {
     var terms = terms.trim().toLowerCase().split(/\b\s+/)
-    console.log(terms)
-    console.log(data)
     if (!run){
       computeTfIdfs(data, tf_, idf)
       run = 1
@@ -46,11 +43,8 @@ var makeRanker = (data) => {
     }
     for (var i = 0; i < terms.length; i++){
       var term = terms[i]
-      console.log(term)
       for (var j = 0; j < data.length; j++){
         if (tf_[j][term]){
-          console.log(tf_[j][term])
-          console.log(idf[term])
           ret[j][0] -= tf_[j][term] * idf[term]
           ret[j][1] -= tf_[j][term]
         }

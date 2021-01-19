@@ -340,7 +340,6 @@ const TransportView = ({setSelTab}) => {
       last.current = null
     }
     last.current = setTimeout(() => {
-      console.log("hi")
       myQuery.current = value
       setData(value !== "" ? myRanker.current(value) : myData.current)
       last.current = null
