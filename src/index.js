@@ -317,9 +317,10 @@ const NewIndentView = () => {
 
 const DEBOUNCE_PERIOD = 100
 
+const transportPersistentStore = {}
+
 const TransportView = ({setSelTab}) => {
   const range = readRange()
-  const [data, setData] = React.useState(range)
   React.useEffect(() => {
     const callbackID = registerCallback(value => {
       myData.current = value
@@ -328,11 +329,16 @@ const TransportView = ({setSelTab}) => {
     })
     return () => deregisterCallback(callbackID)
   }, [])
-  const [search, setSearch] = React.useState("")
+  const [search, setSearch] = React.useState(transportPersistentStore.data)
   const last = React.useRef(null)
   const myData = React.useRef(range)
-  const myRanker = React.useRef(ranker.makeRanker(range))
-  const myQuery = React.useRef("")
+  const vRanker = ranker.makeRanker(range)
+  const myRanker = React.useRef(vRanker)
+  if (transportPersistentStore.data === undefined) {
+    transportPersistentStore.data = ""
+  }
+  const myQuery = React.useRef(transportPersistentStore.data)
+  const [data, setData] = React.useState(transportPersistentStore.data !== "" ? vRanker(transportPersistentStore.data) : range)
   const onChange = value => {
     setSearch(value)
     if (last.current !== null) {
@@ -341,6 +347,7 @@ const TransportView = ({setSelTab}) => {
     }
     last.current = setTimeout(() => {
       myQuery.current = value
+      transportPersistentStore.data = value
       setData(value !== "" ? myRanker.current(value) : myData.current)
       last.current = null
     }, DEBOUNCE_PERIOD)
