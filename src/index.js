@@ -5,9 +5,12 @@ import socketIOClient from "socket.io-client";
 
 import * as Material from "@material-ui/core"
 import * as Icons from "@material-ui/icons"
+import SearchBar from "material-ui-search-bar"
 
 import appLogo from "./resources/logo.jpg"
 import sir5logo from "./resources/5sirlogo.jpg"
+
+const ranker = require("./searchRanker.js")
 
 var serverURL = "https://murmuring-ocean-38436.herokuapp.com/"
 
@@ -312,14 +315,47 @@ const NewIndentView = () => {
   return (<div style={TransportViewStyle}><div style={{height: "6px"}}/><FormFactory fields={formFields} defaults={dataDefaults} formPersistentStore={newIndentPersistentStore}/></div>)
 }
 
+const DEBOUNCE_PERIOD = 100
+
 const TransportView = ({setSelTab}) => {
-  const [data, setData] = React.useState(readRange())
+  const range = readRange()
+  const [data, setData] = React.useState(range)
   React.useEffect(() => {
-    const callbackID = registerCallback(setData)
+    const callbackID = registerCallback(value => {
+      myData.current = value
+      myRanker.current = ranker.makeRanker(value)
+      setData(myQuery.current !== "" ? myRanker.current(myQuery.current) : value)
+    })
     return () => deregisterCallback(callbackID)
   }, [])
+  const [search, setSearch] = React.useState("")
+  const last = React.useRef(null)
+  const myData = React.useRef(range)
+  const myRanker = React.useRef(ranker.makeRanker(range))
+  const myQuery = React.useRef("")
+  const onChange = value => {
+    setSearch(value)
+    if (last.current !== null) {
+      clearTimeout(last.current)
+      last.current = null
+    }
+    last.current = setTimeout(() => {
+      console.log("hi")
+      myQuery.current = value
+      setData(value !== "" ? myRanker.current(value) : myData.current)
+      last.current = null
+    }, DEBOUNCE_PERIOD)
+  }
   return (
     <div>
+      <div style={{height: "12px"}}/>
+      <SearchBar
+        value={search}
+        onChange={onChange}
+        onCancelSearch={() => onChange("")}
+        onRequestSearch={()=>{}}
+        style={{width: "90%", margin: "auto"}}
+        />
       <div style={{height: "6px"}}/>
       <Material.Paper square>
         <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
