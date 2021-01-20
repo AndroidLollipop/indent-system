@@ -356,15 +356,17 @@ const TransportView = ({setSelTab}) => {
       last.current = null
     }, DEBOUNCE_PERIOD)
   }
+  const barRef = React.useRef(null)
   return (
     <div>
       <div style={{height: "12px"}}/>
       <div style={{marginLeft: "12px", marginRight: "12px"}}>
         <SearchBar
+          ref={barRef}
           value={search}
           onChange={onChange}
           onCancelSearch={() => onChange("")}
-          onRequestSearch={()=>{}}
+          onRequestSearch={() => barRef.current.focus()}
           style={{margin: "auto", maxWidth: "1000px"}}
           />
       </div>
