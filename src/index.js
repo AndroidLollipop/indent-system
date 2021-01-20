@@ -444,7 +444,7 @@ const addDetailTab = (data, index) => {
 const ListFactory = ({data, generator, style, header, tail}) => {
   return (
     <Material.TableContainer>
-      <Material.Table>
+      <Material.Table stickyHeader>
         {header}
         <Material.TableBody>
           {data.map(generator)}
