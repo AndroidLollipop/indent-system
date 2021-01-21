@@ -357,6 +357,7 @@ const TransportView = ({setSelTab}) => {
     }, DEBOUNCE_PERIOD)
   }
   const barRef = React.useRef(null)
+  const filteredData = React.useMemo(() => data.filter(x => x.status !== "Hidden"), [data])
   return (
     <div>
       <div style={{height: "12px"}}/>
@@ -372,7 +373,7 @@ const TransportView = ({setSelTab}) => {
       </div>
       <div style={{height: "12px"}}/>
       <Material.Paper square>
-        <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data.filter(x => x.status !== "Hidden")} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
+        <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={filteredData} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
       </Material.Paper>
     </div>
   )
