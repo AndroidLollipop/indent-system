@@ -372,7 +372,7 @@ const TransportView = ({setSelTab}) => {
       </div>
       <div style={{height: "12px"}}/>
       <Material.Paper square>
-        <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
+        <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={data.filter(x => x.status !== "Hidden")} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
       </Material.Paper>
     </div>
   )
@@ -488,7 +488,7 @@ const readNotifications = () => {
 
 var notificationsStore = []
 
-const statuses = ["Pending", "Submitted", "Recommended"]
+const statuses = ["Pending", "Submitted", "Recommended", "Hidden"]
 
 const formFields = [{name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes"}]
 
