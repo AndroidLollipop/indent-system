@@ -394,6 +394,7 @@ const TransportView = ({setSelTab, heightProvider}) => {
 const MyStickyHeader = ({children, heightProvider: [currentHeight, heightListeners]}) => {
   const headRef = React.useRef(null)
   React.useEffect(() => {
+    const myListeners = heightListeners.current
     var height = currentHeight.current
     const capturedTop = headRef.current.getBoundingClientRect().top+window.scrollY
     const recomputeTop = () => {
@@ -401,16 +402,16 @@ const MyStickyHeader = ({children, heightProvider: [currentHeight, heightListene
       setTop(targetPosition)
     }
     recomputeTop()
-    const myIndex = heightListeners.current.push(newHeight => {
+    const myIndex = myListeners.push(newHeight => {
       height = newHeight
       recomputeTop()
     })-1
     window.addEventListener("scroll", recomputeTop)
     return () => {
-      heightListeners.current[myIndex] = ()=>{}
+      myListeners[myIndex] = ()=>{}
       window.removeEventListener("scroll", recomputeTop)
     }
-  }, [])
+  }, [currentHeight, heightListeners])
   const [top, setTop] = React.useState(0)
   return <Material.TableHead><Material.TableRow ref={headRef} style={{pointerEvents: "none", transform: "translate(0,"+top+"px)"}}>{children}</Material.TableRow></Material.TableHead>
 }
