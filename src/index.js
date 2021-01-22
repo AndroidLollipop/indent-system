@@ -59,13 +59,25 @@ const App = () => {
       socket.disconnect()
     }
   }, [])
-  const [selTab, setSelTab] = React.useState(0);
+  const [selTab, setSelTab] = React.useState(0)
+  const appbarRef = React.useRef(null)
+  const heightListeners = React.useRef([])
+  const currentHeight = React.useRef(0)
+
+  React.useEffect(() => {
+    if (appbarRef.current) {
+      currentHeight.current = appbarRef.current.offsetHeight
+      for (const listener of heightListeners.current) {
+        listener(appbarRef.current.offsetHeight)
+      }
+    }
+  }, [appbarRef])
 
   return (
     <div>
-      <Tabs selTab={selTab} setSelTab={setSelTab}>
+      <Tabs selTab={selTab} setSelTab={setSelTab} appbarRef={appbarRef}>
         {[(<div label="view indents" key="defaultTab1" mykey="defaultTab1">
-          <TransportView setSelTab={setSelTab}/>
+          <TransportView setSelTab={setSelTab} heightProvider={[currentHeight, heightListeners]} />
         </div>),
         (<div label="new indent" key="defaultTab2" mykey="defaultTab2">
           <NewIndentView/>
@@ -78,7 +90,7 @@ const App = () => {
           if (currSelTab > index) {
             setSelTab(currSelTab-1)
           }
-        }} details={v} key={v[0]} />))]}
+        }} details={v} key={v[0]} heightProvider={[currentHeight, heightListeners]} />))]}
       </Tabs>
       <div style={{height: "12px"}}/>
       <img src={sir5logo} width="192px"/>
@@ -139,7 +151,7 @@ const NotificationsPanel = ({setSelTab}) => {
 
 const detailPersistentStore = {}
 
-const DetailGenerator = ({details}) => {
+const DetailGenerator = ({details, heightProvider}) => {
   const [id, index] = details
   if (detailPersistentStore[id] === undefined) {
     detailPersistentStore[id] = readDataStore(index)
@@ -149,7 +161,7 @@ const DetailGenerator = ({details}) => {
   <div>
     <div style={{height:"12px"}}/>
     <Material.Paper square>
-      <ListFactory header={(<Material.TableHead><Material.TableRow>{formFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
+      <ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{formFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</MyStickyHeader>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
     </Material.Paper>
     <div style={{height:"12px"}}/>
     <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
@@ -323,7 +335,7 @@ const DEBOUNCE_PERIOD = 100
 
 const transportPersistentStore = {}
 
-const TransportView = ({setSelTab}) => {
+const TransportView = ({setSelTab, heightProvider}) => {
   const range = readRange()
   React.useEffect(() => {
     const callbackID = registerCallback(value => {
@@ -373,10 +385,34 @@ const TransportView = ({setSelTab}) => {
       </div>
       <div style={{height: "12px"}}/>
       <Material.Paper square>
-        <ListFactory header={(<Material.TableHead><Material.TableRow>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</Material.TableRow></Material.TableHead>)} data={filteredData} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
+        <ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</MyStickyHeader>)} data={filteredData} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
       </Material.Paper>
     </div>
   )
+}
+
+const MyStickyHeader = ({children, heightProvider: [currentHeight, heightListeners]}) => {
+  const headRef = React.useRef(null)
+  React.useEffect(() => {
+    var height = currentHeight.current
+    const capturedTop = headRef.current.getBoundingClientRect().top+window.scrollY
+    const recomputeTop = () => {
+      const targetPosition = Math.max(window.scrollY+height-capturedTop, 0)
+      setTop(targetPosition)
+    }
+    recomputeTop()
+    const myIndex = heightListeners.current.push(newHeight => {
+      height = newHeight
+      recomputeTop()
+    })-1
+    window.addEventListener("scroll", recomputeTop)
+    return () => {
+      heightListeners.current[myIndex] = ()=>{}
+      window.removeEventListener("scroll", recomputeTop)
+    }
+  }, [])
+  const [top, setTop] = React.useState(0)
+  return <Material.TableHead><Material.TableRow ref={headRef} style={{pointerEvents: "none", transform: "translate(0,"+top+"px)"}}>{children}</Material.TableRow></Material.TableHead>
 }
 
 const TransportViewStyle = {
@@ -497,11 +533,11 @@ const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "St
 
 const displayFields = [...formFields, ...dataDefaults]
 
-const Tabs = ({children, selTab, setSelTab}) => {
+const Tabs = ({children, selTab, setSelTab, appbarRef}) => {
   const pre = [(<Material.Tab style={{opacity: 1, minWidth: 0, minHeight:0, padding: 0}} disableRipple selected label={<div style={{height: "48px", width: "48px"}}><img src={appLogo} height="48px" width="48px"/></div>}/>)]
   return (
     <div>
-      <Material.AppBar position="sticky" style={{top: "env(safe-area-inset-top)"}}>
+      <Material.AppBar position="sticky" style={{top: "env(safe-area-inset-top)"}} ref={appbarRef}>
         <Material.Tabs variant="scrollable" value={Math.min(selTab, children.length-1)+pre.length}>
           {[...pre , ...children.map((child, index) => {
             const obj = {...child.props, removeCallback: () => child.props.removeCallback(index, children.length), onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1), key: child.props.mykey}
