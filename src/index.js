@@ -22,6 +22,9 @@ import {
 import TodayIcon from "@material-ui/icons/Today"
 import ListIcon from "@material-ui/icons/List"
 
+const VERSION_NUMBER = "0.1.1a"
+console.log(VERSION_NUMBER)
+
 const ranker = require("./searchRanker.js")
 
 var serverURL = "https://murmuring-ocean-38436.herokuapp.com/"
@@ -347,10 +350,13 @@ const DEBOUNCE_PERIOD = 100
 
 const transportPersistentStore = {}
 
-const Appointment = ({children, ...restProps}) => (
+const Appointment = (setSelTab) => ({children, ...restProps}) => (
   <Appointments.Appointment
     {...restProps}
-    onClick={obj => addDetailTab(undefined, obj.data.internalUID)}
+    onClick={obj => {
+      addDetailTab(undefined, obj.data.internalUID)
+      setSelTab(Infinity)
+    }}
   >
     {children}
   </Appointments.Appointment>
@@ -476,7 +482,7 @@ const TransportView = ({setSelTab, heightProvider}) => {
           }}/>
           <MonthView/>
           <Appointments
-            appointmentComponent={Appointment}
+            appointmentComponent={Appointment(setSelTab)}
           />
           <Toolbar/>
           <DateNavigator/>
