@@ -22,7 +22,7 @@ import {
 import TodayIcon from "@material-ui/icons/Today"
 import ListIcon from "@material-ui/icons/List"
 
-const VERSION_NUMBER = "0.1.1a"
+const VERSION_NUMBER = "0.1.2a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -441,6 +441,7 @@ const TransportView = ({setSelTab, heightProvider}) => {
   }
   const [view, setView] = React.useState(transportPersistentStore.view)
   const [selDate, setDate] = React.useState(transportPersistentStore.selDate)
+  const myAppointment = React.useMemo(() => Appointment(setSelTab), [setSelTab])
   return (
     <div>
       <div style={{height: "12px"}}/>
@@ -482,7 +483,7 @@ const TransportView = ({setSelTab, heightProvider}) => {
           }}/>
           <MonthView/>
           <Appointments
-            appointmentComponent={Appointment(setSelTab)}
+            appointmentComponent={myAppointment}
           />
           <Toolbar/>
           <DateNavigator/>
