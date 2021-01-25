@@ -19,7 +19,7 @@ import {
   DateNavigator
 } from "@devexpress/dx-react-scheduler-material-ui"
 
-import TodayIcon from "@material-ui/icons/Today"
+import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 
 const VERSION_NUMBER = "0.1.2a"
@@ -462,7 +462,7 @@ const TransportView = ({setSelTab, heightProvider}) => {
             }
           }}
           style={{margin: "auto", maxWidth: "1000px"}}
-          searchIcon={view === "list" ? (<TodayIcon/>) : (<ListIcon/>)}
+          searchIcon={view === "list" ? (<CalendarTodayIcon/>) : (<ListIcon/>)}
           />
       </div>
       <div style={{height: "12px"}}/>
