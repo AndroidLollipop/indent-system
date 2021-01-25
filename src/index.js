@@ -10,6 +10,18 @@ import SearchBar from "material-ui-search-bar"
 import appLogo from "./resources/logo.jpg"
 import sir5logo from "./resources/5sirlogo.jpg"
 
+import {ViewState} from "@devexpress/dx-react-scheduler"
+import {
+  Scheduler,
+  MonthView,
+  Appointments,
+  Toolbar,
+  DateNavigator
+} from "@devexpress/dx-react-scheduler-material-ui"
+
+import TodayIcon from "@material-ui/icons/Today"
+import ListIcon from "@material-ui/icons/List"
+
 const ranker = require("./searchRanker.js")
 
 var serverURL = "https://murmuring-ocean-38436.herokuapp.com/"
@@ -341,6 +353,8 @@ const TransportView = ({setSelTab, heightProvider}) => {
     transportPersistentStore.data = ""
     transportPersistentStore.sort = null
     transportPersistentStore.up = true
+    transportPersistentStore.view = "list"
+    transportPersistentStore.selDate = (new Date()).toISOString().slice(0, 10)
   }
   const range = readRange()
   React.useEffect(() => {
@@ -361,6 +375,8 @@ const TransportView = ({setSelTab, heightProvider}) => {
   const onChange = value => {
     transportPersistentStore.data = value
     setSearch(value)
+    transportPersistentStore.view = "list"
+    setView("list")
     transportPersistentStore.sort = null
     setSort(null)
     transportPersistentStore.up = true
@@ -408,6 +424,8 @@ const TransportView = ({setSelTab, heightProvider}) => {
     transportPersistentStore.up = set
     setUp(set)
   }
+  const [view, setView] = React.useState(transportPersistentStore.view)
+  const [selDate, setDate] = React.useState(transportPersistentStore.selDate)
   return (
     <div>
       <div style={{height: "12px"}}/>
@@ -417,13 +435,37 @@ const TransportView = ({setSelTab, heightProvider}) => {
           value={search}
           onChange={onChange}
           onCancelSearch={() => onChange("")}
-          onRequestSearch={() => barRef.current.focus()}
+          onRequestSearch={() => {
+            if (view === "list") {
+              transportPersistentStore.view = "calendar"
+              setView("calendar")
+            }
+            else {
+              transportPersistentStore.view = "list"
+              setView("list")
+            }
+          }}
           style={{margin: "auto", maxWidth: "1000px"}}
+          searchIcon={view === "list" ? (<TodayIcon/>) : (<ListIcon/>)}
           />
       </div>
       <div style={{height: "12px"}}/>
       <Material.Paper square>
-        <ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{displayFields.map((x, index) => (<Material.TableCell key={index}><Material.TableSortLabel active={mySort === x.name} direction={mySort === x.name && isUp === false ? "desc" : "asc"} onClick={() => sortOnClick(x.name)}>{x.friendlyName}</Material.TableSortLabel></Material.TableCell>))}</MyStickyHeader>)} data={reversedData} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
+        {view === "list" ? (<ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{displayFields.map((x, index) => (<Material.TableCell key={index}><Material.TableSortLabel active={mySort === x.name} direction={mySort === x.name && isUp === false ? "desc" : "asc"} onClick={() => sortOnClick(x.name)}>{x.friendlyName}</Material.TableSortLabel></Material.TableCell>))}</MyStickyHeader>)} data={reversedData} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>)
+        : (<Scheduler data={filteredData.map(x => {
+          const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
+          return {
+            startDate: fmt(x.startDateTime),
+            endDate: fmt(x.endDateTime),
+            title: x.name
+          }
+        })}>
+          <ViewState defaultCurrentDate={selDate} onCurrentDateChange={date => transportPersistentStore.selDate = date}/>
+          <MonthView/>
+          <Appointments/>
+          <Toolbar/>
+          <DateNavigator/>
+        </Scheduler>)}
       </Material.Paper>
     </div>
   )
