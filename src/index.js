@@ -357,6 +357,8 @@ const TransportView = ({setSelTab, heightProvider}) => {
   const [data, setData] = React.useState(transportPersistentStore.data !== "" ? vRanker(transportPersistentStore.data) : range)
   const onChange = value => {
     setSearch(value)
+    setSort(null)
+    setUp(true)
     if (last.current !== null) {
       clearTimeout(last.current)
       last.current = null
@@ -369,7 +371,36 @@ const TransportView = ({setSelTab, heightProvider}) => {
     }, DEBOUNCE_PERIOD)
   }
   const barRef = React.useRef(null)
+  const [mySort, setSort] = React.useState(null)
+  const [isUp, setUp] = React.useState(true)
   const filteredData = React.useMemo(() => data.filter(x => x.status !== "Hidden"), [data])
+  const sortedData = React.useMemo(() => mySort === null ? filteredData : filteredData.map((x, index) => [x, index]).sort(([dx, ix], [dy, iy]) => {
+    const x = dx[mySort]
+    const y = dy[mySort]
+    console.log(dx, mySort, x, y, ix, iy)
+    if (typeof x === typeof y && x !== y) {
+      if (typeof x === "string") {
+        for (var i = 0; i < Math.min(x.length, y.length); i++) {
+          const xc = x.charCodeAt(i)
+          const yc = y.charCodeAt(i)
+          if (xc !== yc) {
+            return xc-yc
+          }
+        }
+        return x.length - y.length
+      }
+      else if (typeof x === "number") {
+        return x-y
+      }
+    }
+    return ix-iy
+  }).map(([x, ix]) => x)
+  , [filteredData, mySort])
+  const reversedData = React.useMemo(() => isUp === true ? sortedData : [...sortedData].reverse(), [sortedData, isUp])
+  const sortOnClick = name => {
+    setSearch("")
+    setUp(name === mySort ? (isUp === false ? (setSort(null), true) : false) : (setSort(name), true))
+  }
   return (
     <div>
       <div style={{height: "12px"}}/>
@@ -385,7 +416,7 @@ const TransportView = ({setSelTab, heightProvider}) => {
       </div>
       <div style={{height: "12px"}}/>
       <Material.Paper square>
-        <ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{displayFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</MyStickyHeader>)} data={filteredData} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
+        <ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{displayFields.map((x, index) => (<Material.TableCell key={index}><Material.TableSortLabel active={mySort === x.name} direction={mySort === x.name && isUp === false ? "desc" : "asc"} onClick={() => sortOnClick(x.name)}>{x.friendlyName}</Material.TableSortLabel></Material.TableCell>))}</MyStickyHeader>)} data={reversedData} generator={x => transportItemGenerator(x, x.internalUID, setSelTab)} style={TransportViewStyle}/>
       </Material.Paper>
     </div>
   )
@@ -413,7 +444,7 @@ const MyStickyHeader = ({children, heightProvider: [currentHeight, heightListene
     }
   }, [currentHeight, heightListeners])
   const [top, setTop] = React.useState(0)
-  return <Material.TableHead><Material.TableRow ref={headRef} style={{pointerEvents: "none", transform: "translate(0,"+top+"px)"}}>{children}</Material.TableRow></Material.TableHead>
+  return <Material.TableHead><Material.TableRow ref={headRef} style={{transform: "translate(0,"+top+"px)"}}>{children}</Material.TableRow></Material.TableHead>
 }
 
 const TransportViewStyle = {
