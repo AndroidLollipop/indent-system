@@ -336,6 +336,12 @@ const DEBOUNCE_PERIOD = 100
 const transportPersistentStore = {}
 
 const TransportView = ({setSelTab, heightProvider}) => {
+  if (transportPersistentStore.initialized !== true) {
+    transportPersistentStore.initialized = true
+    transportPersistentStore.data = ""
+    transportPersistentStore.sort = null
+    transportPersistentStore.up = true
+  }
   const range = readRange()
   React.useEffect(() => {
     const callbackID = registerCallback(value => {
@@ -350,14 +356,14 @@ const TransportView = ({setSelTab, heightProvider}) => {
   const myData = React.useRef(range)
   const vRanker = ranker.makeRanker(range)
   const myRanker = React.useRef(vRanker)
-  if (transportPersistentStore.data === undefined) {
-    transportPersistentStore.data = ""
-  }
   const myQuery = React.useRef(transportPersistentStore.data)
   const [data, setData] = React.useState(transportPersistentStore.data !== "" ? vRanker(transportPersistentStore.data) : range)
   const onChange = value => {
+    transportPersistentStore.data = value
     setSearch(value)
+    transportPersistentStore.sort = null
     setSort(null)
+    transportPersistentStore.up = true
     setUp(true)
     if (last.current !== null) {
       clearTimeout(last.current)
@@ -365,14 +371,13 @@ const TransportView = ({setSelTab, heightProvider}) => {
     }
     last.current = setTimeout(() => {
       myQuery.current = value
-      transportPersistentStore.data = value
       setData(value !== "" ? myRanker.current(value) : myData.current)
       last.current = null
     }, DEBOUNCE_PERIOD)
   }
   const barRef = React.useRef(null)
-  const [mySort, setSort] = React.useState(null)
-  const [isUp, setUp] = React.useState(true)
+  const [mySort, setSort] = React.useState(transportPersistentStore.sort)
+  const [isUp, setUp] = React.useState(transportPersistentStore.up)
   const filteredData = React.useMemo(() => data.filter(x => x.status !== "Hidden"), [data])
   const sortedData = React.useMemo(() => mySort === null ? filteredData : filteredData.map((x, index) => [x, index]).sort(([dx, ix], [dy, iy]) => {
     const x = dx[mySort]
@@ -397,8 +402,11 @@ const TransportView = ({setSelTab, heightProvider}) => {
   , [filteredData, mySort])
   const reversedData = React.useMemo(() => isUp === true ? sortedData : [...sortedData].reverse(), [sortedData, isUp])
   const sortOnClick = name => {
+    transportPersistentStore.data = ""
     setSearch("")
-    setUp(name === mySort ? (isUp === false ? (setSort(null), true) : false) : (setSort(name), true))
+    const set = name === mySort ? (isUp === false ? (transportPersistentStore.sort = null, setSort(null), true) : false) : (transportPersistentStore.sort = name, setSort(name), true)
+    transportPersistentStore.up = set
+    setUp(set)
   }
   return (
     <div>
