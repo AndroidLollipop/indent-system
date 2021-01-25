@@ -377,7 +377,6 @@ const TransportView = ({setSelTab, heightProvider}) => {
   const sortedData = React.useMemo(() => mySort === null ? filteredData : filteredData.map((x, index) => [x, index]).sort(([dx, ix], [dy, iy]) => {
     const x = dx[mySort]
     const y = dy[mySort]
-    console.log(dx, mySort, x, y, ix, iy)
     if (typeof x === typeof y && x !== y) {
       if (typeof x === "string") {
         for (var i = 0; i < Math.min(x.length, y.length); i++) {
