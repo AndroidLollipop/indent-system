@@ -460,7 +460,10 @@ const TransportView = ({setSelTab, heightProvider}) => {
             title: x.name
           }
         })}>
-          <ViewState defaultCurrentDate={selDate} onCurrentDateChange={date => transportPersistentStore.selDate = date}/>
+          <ViewState defaultCurrentDate={selDate} onCurrentDateChange={date => {
+            transportPersistentStore.selDate = date
+            setDate(date)
+          }}/>
           <MonthView/>
           <Appointments/>
           <Toolbar/>
