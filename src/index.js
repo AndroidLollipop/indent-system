@@ -347,6 +347,15 @@ const DEBOUNCE_PERIOD = 100
 
 const transportPersistentStore = {}
 
+const Appointment = ({children, ...restProps}) => (
+  <Appointments.Appointment
+    {...restProps}
+    onClick={obj => addDetailTab(undefined, obj.data.internalUID)}
+  >
+    {children}
+  </Appointments.Appointment>
+)
+
 const TransportView = ({setSelTab, heightProvider}) => {
   if (transportPersistentStore.initialized !== true) {
     transportPersistentStore.initialized = true
@@ -457,7 +466,8 @@ const TransportView = ({setSelTab, heightProvider}) => {
           return {
             startDate: fmt(x.startDateTime),
             endDate: fmt(x.endDateTime),
-            title: x.name
+            title: x.name,
+            internalUID: x.internalUID
           }
         })}>
           <ViewState defaultCurrentDate={selDate} onCurrentDateChange={date => {
@@ -465,7 +475,9 @@ const TransportView = ({setSelTab, heightProvider}) => {
             setDate(date)
           }}/>
           <MonthView/>
-          <Appointments/>
+          <Appointments
+            appointmentComponent={Appointment}
+          />
           <Toolbar/>
           <DateNavigator/>
         </Scheduler>)}
