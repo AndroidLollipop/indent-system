@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/indent-system/static/js/main.be06009e.chunk.js",
-    "main.js.map": "/indent-system/static/js/main.be06009e.chunk.js.map",
+    "main.js": "/indent-system/static/js/main.e5ffffbf.chunk.js",
+    "main.js.map": "/indent-system/static/js/main.e5ffffbf.chunk.js.map",
     "runtime-main.js": "/indent-system/static/js/runtime-main.e92cea01.js",
     "runtime-main.js.map": "/indent-system/static/js/runtime-main.e92cea01.js.map",
-    "static/js/2.5574f088.chunk.js": "/indent-system/static/js/2.5574f088.chunk.js",
-    "static/js/2.5574f088.chunk.js.map": "/indent-system/static/js/2.5574f088.chunk.js.map",
+    "static/js/2.f99f6784.chunk.js": "/indent-system/static/js/2.f99f6784.chunk.js",
+    "static/js/2.f99f6784.chunk.js.map": "/indent-system/static/js/2.f99f6784.chunk.js.map",
     "index.html": "/indent-system/index.html",
-    "static/js/2.5574f088.chunk.js.LICENSE.txt": "/indent-system/static/js/2.5574f088.chunk.js.LICENSE.txt",
+    "static/js/2.f99f6784.chunk.js.LICENSE.txt": "/indent-system/static/js/2.f99f6784.chunk.js.LICENSE.txt",
     "static/media/5sirlogo.a6ac04db.jpg": "/indent-system/static/media/5sirlogo.a6ac04db.jpg",
     "static/media/logo.58ed9303.jpg": "/indent-system/static/media/logo.58ed9303.jpg"
   },
   "entrypoints": [
     "static/js/runtime-main.e92cea01.js",
-    "static/js/2.5574f088.chunk.js",
-    "static/js/main.be06009e.chunk.js"
+    "static/js/2.f99f6784.chunk.js",
+    "static/js/main.e5ffffbf.chunk.js"
   ]
 }
