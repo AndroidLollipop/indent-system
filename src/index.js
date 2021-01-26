@@ -454,28 +454,39 @@ const TransportView = ({setSelTab, heightProvider}) => {
   const [view, setView] = React.useState(transportPersistentStore.view)
   const [selDate, setDate] = React.useState(transportPersistentStore.selDate)
   const myAppointment = React.useMemo(() => Appointment(setSelTab), [setSelTab])
+  React.useEffect(() => {
+    if (barRef.current === null) {
+      return
+    }
+    barRef.current.addEventListener("keyup", e => {
+      if (e.charCode === 13 || e.key === "Enter") {
+        e.stopPropagation()
+      }
+    }, {capture: true})
+  }, [barRef])
   return (
     <div>
       <div style={{height: "12px"}}/>
       <div style={{marginLeft: "12px", marginRight: "12px"}}>
-        <SearchBar
-          ref={barRef}
-          value={search}
-          onChange={onChange}
-          onCancelSearch={() => onChange("")}
-          onRequestSearch={() => {
-            if (view === "list") {
-              transportPersistentStore.view = "calendar"
-              setView("calendar")
-            }
-            else {
-              transportPersistentStore.view = "list"
-              setView("list")
-            }
-          }}
-          style={{margin: "auto", maxWidth: "1000px"}}
-          searchIcon={<AnimatedIcon icon={view}/>}
-          />
+        <div ref={barRef}>
+          <SearchBar
+            value={search}
+            onChange={onChange}
+            onCancelSearch={() => onChange("")}
+            onRequestSearch={() => {
+              if (view === "list") {
+                transportPersistentStore.view = "calendar"
+                setView("calendar")
+              }
+              else {
+                transportPersistentStore.view = "list"
+                setView("list")
+              }
+            }}
+            style={{margin: "auto", maxWidth: "1000px"}}
+            searchIcon={<AnimatedIcon icon={view}/>}
+            />
+        </div>
       </div>
       <div style={{height: "12px"}}/>
       <Material.Paper square>
