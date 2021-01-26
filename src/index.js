@@ -22,7 +22,7 @@ import {
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 
-const VERSION_NUMBER = "0.1.7a"
+const VERSION_NUMBER = "0.1.8a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -513,18 +513,23 @@ const AnimatedIcon = ({icon}) => {
   const isAnim = React.useRef(false)
   const targetIsExpanded = React.useRef(true)
   React.useEffect(() => {
-    iconRef.current.addEventListener("transitionend", () => {
+    iconRef.current.addEventListener("transitionend", (e) => {
       isAnim.current = false
+      targetIsExpanded.current = [...e.target.classList].filter(x => x === "expanded").length > 0
       if (currListener.current !== null) {
         currListener.current()
       }
     })
     iconRef.current.addEventListener("transitionrun", (e) => {
       isAnim.current = true
-      targetIsExpanded.current = [...e.srcElement.classList].filter(x => x === "expanded").length > 0
+      targetIsExpanded.current = [...e.target.classList].filter(x => x === "expanded").length > 0
     })
-    iconRef.current.addEventListener("transitioncancel", () => {
+    iconRef.current.addEventListener("transitioncancel", (e) => {
       isAnim.current = false
+      targetIsExpanded.current = [...e.target.classList].filter(x => x === "expanded").length > 0
+    })
+    iconRef.current.addEventListener("transitionstart", (e) => {
+      targetIsExpanded.current = [...e.target.classList].filter(x => x === "expanded").length > 0
     })
   }, [iconRef])
   React.useEffect(() => {
