@@ -17,3 +17,9 @@ body {
   width:100%;
   padding-top: env(safe-area-inset-top);
 }
+.expanded {
+  transform:scale(1);
+}
+.collapsed {
+  transform:scale(0);
+}
