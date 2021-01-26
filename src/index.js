@@ -22,7 +22,7 @@ import {
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 
-const VERSION_NUMBER = "0.1.2a"
+const VERSION_NUMBER = "0.1.5a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -462,7 +462,7 @@ const TransportView = ({setSelTab, heightProvider}) => {
             }
           }}
           style={{margin: "auto", maxWidth: "1000px"}}
-          searchIcon={view === "list" ? (<CalendarTodayIcon/>) : (<ListIcon/>)}
+          searchIcon={<AnimatedIcon icon={view}/>}
           />
       </div>
       <div style={{height: "12px"}}/>
@@ -491,6 +491,54 @@ const TransportView = ({setSelTab, heightProvider}) => {
       </Material.Paper>
     </div>
   )
+}
+
+const AnimatedIcon = ({icon}) => {
+  const firstRender = React.useRef(true)
+  const [displayedIcon, setIcon] = React.useState(icon)
+  const iconRef = React.useRef(null)
+  const currListener = React.useRef(null)
+  const isAnim = React.useRef(false)
+  const targetIsExpanded = React.useRef(true)
+  React.useEffect(() => {
+    iconRef.current.addEventListener("transitionend", () => {
+      isAnim.current = false
+      if (currListener.current !== null) {
+        currListener.current()
+      }
+    })
+    iconRef.current.addEventListener("transitionrun", (e) => {
+      isAnim.current = true
+      targetIsExpanded.current = [...e.srcElement.classList].filter(x => x === "expanded").length > 0
+    })
+    iconRef.current.addEventListener("transitioncancel", () => {
+      isAnim.current = false
+    })
+  }, [iconRef])
+  React.useEffect(() => {
+    if (firstRender.current === true) {
+      firstRender.current = false
+      return
+    }
+    if (displayedIcon === icon) {
+      currListener.current = null
+      iconRef.current.classList.remove("collapsed")
+      iconRef.current.classList.add("expanded")
+      return
+    }
+    currListener.current = () => {
+      currListener.current = null
+      setIcon(icon)
+      iconRef.current.classList.remove("collapsed")
+      iconRef.current.classList.add("expanded")
+    }
+    iconRef.current.classList.remove("expanded")
+    iconRef.current.classList.add("collapsed")
+    if (isAnim.current === false && targetIsExpanded.current === false) {
+      currListener.current()
+    }
+  }, [icon])
+  return (<Material.Icon ref={iconRef} style={{transition: "all 0.075s linear"}}>{displayedIcon === "list" ? (<CalendarTodayIcon/>) : (<ListIcon/>)}</Material.Icon>)
 }
 
 const MyStickyHeader = ({children, heightProvider: [currentHeight, heightListeners]}) => {
