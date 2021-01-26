@@ -22,7 +22,7 @@ import {
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 
-const VERSION_NUMBER = "0.1.6a"
+const VERSION_NUMBER = "0.1.7a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -246,10 +246,17 @@ const readRange = () => {
 }
 
 const submitForm = async (data) => {
+  const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
+  const timeDelta = Math.min(Math.min(new Date(fmt(data.startDateTime)))||Infinity, Math.min(new Date(fmt(data.endDateTime)))||Infinity)-(new Date())
+  if (timeDelta < 1468800000) {
+    return "FAILED"
+  }
   const refresh = await appendDataStore(data)
   if (refresh) {
     notifyNewData()
+    return "SUCCESS"
   }
+  return "UNKNOWN"
 }
 
 const FormFactory = ({fields, defaults, formPersistentStore}) => {
@@ -275,7 +282,7 @@ const FormFactory = ({fields, defaults, formPersistentStore}) => {
     myPersistentStore.data = initializedFields
     setStates(initializedFields)
   }
-  const submit = () => {
+  const submit = async () => {
     var constitutedObject = {}
     for (const {name, initialData} of defaults) {
       constitutedObject[name] = initialData
@@ -284,8 +291,14 @@ const FormFactory = ({fields, defaults, formPersistentStore}) => {
       const normalizer = normalizers[fieldType]
       constitutedObject[fieldName] = normalizer ? normalizer(text) : text
     }
-    submitForm(constitutedObject)
-    initializeFields()
+    const result = await submitForm(constitutedObject)
+    if (result === "SUCCESS") {
+      alert("Indent submitted successfully!")
+      initializeFields()
+    }
+    else if (result === "FAILED") {
+      alert("This indent is too late. Please discuss this indent manually with the transport clerk.")
+    }
   }
   return (
   <form noValidate>
