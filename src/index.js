@@ -22,7 +22,7 @@ import {
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 
-const VERSION_NUMBER = "0.1.5a"
+const VERSION_NUMBER = "0.1.6a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -210,7 +210,6 @@ const readDataStore = (internalUID) => {
 var ackWriteToken = 0
 var currWriteToken = 0
 var pendingWrites = []
-
 
 const writeDataStore = async (internalUID, write) => {
   currWriteToken++
@@ -571,8 +570,19 @@ const TransportViewStyle = {
 }
 
 const transportItemGenerator = (data, index, setSelTab) => {
+  const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
+  var backgroundColor = "white"
+  if (data.status !== "Recommended") {
+    const timeDelta = Math.min(Math.min(new Date(fmt(data.startDateTime)))||Infinity, Math.min(new Date(fmt(data.endDateTime)))||Infinity)-(new Date())
+    if (timeDelta < 1468800000) {
+      backgroundColor = "rgb(255, 204, 204)"
+    }
+    else if (timeDelta < 1814400000) {
+      backgroundColor = "rgb(255, 255, 230)"
+    }
+  }
   return (
-    <Material.TableRow key={data.internalUID} onClick={() => {
+    <Material.TableRow style={{backgroundColor}} key={data.internalUID} onClick={() => {
       addDetailTab(data, index)
       setSelTab(Infinity)
     }}>
