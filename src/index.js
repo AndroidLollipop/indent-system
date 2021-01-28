@@ -22,7 +22,7 @@ import {
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 
-const VERSION_NUMBER = "0.1.9a"
+const VERSION_NUMBER = "0.1.10a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -610,13 +610,16 @@ const TransportViewStyle = {
 const transportItemGenerator = (data, index, setSelTab) => {
   const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
   var backgroundColor = "white"
-  if (data.status !== "Recommended") {
+  if (data.status === "Recommended") {
+    backgroundColor = "rgb(230, 255, 230)"
+  }
+  else {
     const timeDelta = Math.min(Math.min(new Date(fmt(data.startDateTime)))||Infinity, Math.min(new Date(fmt(data.endDateTime)))||Infinity)-(new Date())
     if (timeDelta < 1468800000) {
-      backgroundColor = "rgb(255, 204, 204)"
+      backgroundColor = "rgb(255, 230, 230)"
     }
     else if (timeDelta < 1814400000) {
-      backgroundColor = "rgb(255, 255, 230)"
+      backgroundColor = "rgb(255, 255, 204)"
     }
   }
   return (
