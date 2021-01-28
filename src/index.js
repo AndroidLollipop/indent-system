@@ -22,7 +22,7 @@ import {
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 
-const VERSION_NUMBER = "0.1.8a"
+const VERSION_NUMBER = "0.1.9a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -549,10 +549,18 @@ const AnimatedIcon = ({icon}) => {
   const synchronousIcon = React.useRef(icon)
   const [displayedIcon, setIcon] = React.useState(icon)
   const iconRef = React.useRef(null)
-  const currListener = React.useRef(null)
+  const currTarget = React.useRef(null)
   const request = React.useRef(null)
   React.useEffect(() => {
-    request.current = synchronousAnimationProvider(iconRef, () => currListener.current !== null ? currListener.current() : null)
+    request.current = synchronousAnimationProvider(iconRef, () => {
+      if (currTarget.current !== null) {
+        const icon = currTarget.current
+        currTarget.current = null
+        synchronousIcon.current = icon
+        setIcon(icon)
+        request.current("expand")
+      }
+    })
   }, [iconRef])
   React.useEffect(() => {
     if (firstRender.current === true) {
@@ -560,16 +568,11 @@ const AnimatedIcon = ({icon}) => {
       return
     }
     if (synchronousIcon.current === icon) {
-      currListener.current = null
+      currTarget.current = null
       request.current("expand")
       return
     }
-    currListener.current = () => {
-      currListener.current = null
-      synchronousIcon.current = icon
-      setIcon(icon)
-      request.current("expand")
-    }
+    currTarget.current = icon
     request.current("collapse")
   }, [icon])
   return (<Material.Icon ref={iconRef} style={{transition: TRANSITION_STRING}}>{displayedIcon === "list" ? (<CalendarTodayIcon/>) : (<ListIcon/>)}</Material.Icon>)
