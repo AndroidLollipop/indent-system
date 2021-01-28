@@ -362,17 +362,32 @@ const DEBOUNCE_PERIOD = 100
 
 const transportPersistentStore = {}
 
-const Appointment = (setSelTab) => ({children, ...restProps}) => (
-  <Appointments.Appointment
+const Appointment = (setSelTab) => ({data, children, ...restProps}) => {
+  var backgroundColor = "gray"
+  if (data.status === "Recommended") {
+    backgroundColor = "green"
+  }
+  else {
+    const timeDelta = Math.min(Math.min(new Date(data.startDate))||Infinity, Math.min(new Date(data.endDate))||Infinity)-(new Date())
+    if (timeDelta < 1468800000) {
+      backgroundColor = "red"
+    }
+    else if (timeDelta < 1814400000) {
+      backgroundColor = "rgb(204, 204, 0)"
+    }
+  }
+  return (<Appointments.Appointment
     {...restProps}
+    data={data}
     onClick={obj => {
       addDetailTab(undefined, obj.data.internalUID)
       setSelTab(Infinity)
     }}
+    style={{backgroundColor: backgroundColor}}
   >
     {children}
-  </Appointments.Appointment>
-)
+  </Appointments.Appointment>)
+}
 
 const TransportView = ({setSelTab, heightProvider}) => {
   if (transportPersistentStore.initialized !== true) {
@@ -497,7 +512,8 @@ const TransportView = ({setSelTab, heightProvider}) => {
             startDate: fmt(x.startDateTime),
             endDate: fmt(x.endDateTime),
             title: x.name,
-            internalUID: x.internalUID
+            internalUID: x.internalUID,
+            status: x.status
           }
         })}>
           <ViewState defaultCurrentDate={selDate} onCurrentDateChange={date => {
