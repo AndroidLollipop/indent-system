@@ -519,33 +519,40 @@ const TransportView = ({setSelTab, heightProvider}) => {
 const ANIMATION_TIME = 0.075
 const TRANSITION_STRING = `all ${ANIMATION_TIME}s linear`
 
+const synchronousAnimationProvider = (ref, onAnimationCollapse) => {
+  const processEnd = () => {
+    const width = ref.current.getBoundingClientRect().width
+    if (width === 0) {
+      onAnimationCollapse()
+    }
+  }
+  ref.current.addEventListener("transitionend", processEnd)
+  ref.current.addEventListener("transitioncancel", processEnd)
+  const requestChange = (change) => {
+    if (change === "expand") {
+      ref.current.classList.remove("collapsed")
+      ref.current.classList.add("expanded")
+    }
+    else if (change === "collapse") {
+      ref.current.classList.remove("expanded")
+      ref.current.classList.add("collapsed")
+      if (ref.current.getBoundingClientRect().width === 0) {
+        onAnimationCollapse()
+      }
+    }
+  }
+  return requestChange
+}
+
 const AnimatedIcon = ({icon}) => {
   const firstRender = React.useRef(true)
   const synchronousIcon = React.useRef(icon)
   const [displayedIcon, setIcon] = React.useState(icon)
   const iconRef = React.useRef(null)
   const currListener = React.useRef(null)
-  const isAnim = React.useRef(false)
-  const targetIsExpanded = React.useRef(true)
+  const request = React.useRef(null)
   React.useEffect(() => {
-    iconRef.current.addEventListener("transitionend", (e) => {
-      isAnim.current = false
-      targetIsExpanded.current = [...e.target.classList].filter(x => x === "expanded").length > 0
-      if (currListener.current !== null) {
-        currListener.current()
-      }
-    })
-    iconRef.current.addEventListener("transitionrun", (e) => {
-      isAnim.current = true
-      targetIsExpanded.current = [...e.target.classList].filter(x => x === "expanded").length > 0
-    })
-    iconRef.current.addEventListener("transitioncancel", (e) => {
-      isAnim.current = false
-      targetIsExpanded.current = [...e.target.classList].filter(x => x === "expanded").length > 0
-    })
-    iconRef.current.addEventListener("transitionstart", (e) => {
-      targetIsExpanded.current = [...e.target.classList].filter(x => x === "expanded").length > 0
-    })
+    request.current = synchronousAnimationProvider(iconRef, () => currListener.current !== null ? currListener.current() : null)
   }, [iconRef])
   React.useEffect(() => {
     if (firstRender.current === true) {
@@ -554,22 +561,16 @@ const AnimatedIcon = ({icon}) => {
     }
     if (synchronousIcon.current === icon) {
       currListener.current = null
-      iconRef.current.classList.remove("collapsed")
-      iconRef.current.classList.add("expanded")
+      request.current("expand")
       return
     }
     currListener.current = () => {
       currListener.current = null
       synchronousIcon.current = icon
       setIcon(icon)
-      iconRef.current.classList.remove("collapsed")
-      iconRef.current.classList.add("expanded")
+      request.current("expand")
     }
-    iconRef.current.classList.remove("expanded")
-    iconRef.current.classList.add("collapsed")
-    if (isAnim.current === false && targetIsExpanded.current === false) {
-      currListener.current()
-    }
+    request.current("collapse")
   }, [icon])
   return (<Material.Icon ref={iconRef} style={{transition: TRANSITION_STRING}}>{displayedIcon === "list" ? (<CalendarTodayIcon/>) : (<ListIcon/>)}</Material.Icon>)
 }
