@@ -516,8 +516,12 @@ const TransportView = ({setSelTab, heightProvider}) => {
   )
 }
 
+const ANIMATION_TIME = 0.075
+const TRANSITION_STRING = `all ${ANIMATION_TIME}s linear`
+
 const AnimatedIcon = ({icon}) => {
   const firstRender = React.useRef(true)
+  const synchronousIcon = React.useRef(icon)
   const [displayedIcon, setIcon] = React.useState(icon)
   const iconRef = React.useRef(null)
   const currListener = React.useRef(null)
@@ -548,7 +552,7 @@ const AnimatedIcon = ({icon}) => {
       firstRender.current = false
       return
     }
-    if (displayedIcon === icon) {
+    if (synchronousIcon.current === icon) {
       currListener.current = null
       iconRef.current.classList.remove("collapsed")
       iconRef.current.classList.add("expanded")
@@ -556,6 +560,7 @@ const AnimatedIcon = ({icon}) => {
     }
     currListener.current = () => {
       currListener.current = null
+      synchronousIcon.current = icon
       setIcon(icon)
       iconRef.current.classList.remove("collapsed")
       iconRef.current.classList.add("expanded")
@@ -566,7 +571,7 @@ const AnimatedIcon = ({icon}) => {
       currListener.current()
     }
   }, [icon])
-  return (<Material.Icon ref={iconRef} style={{transition: "all 0.075s linear"}}>{displayedIcon === "list" ? (<CalendarTodayIcon/>) : (<ListIcon/>)}</Material.Icon>)
+  return (<Material.Icon ref={iconRef} style={{transition: TRANSITION_STRING}}>{displayedIcon === "list" ? (<CalendarTodayIcon/>) : (<ListIcon/>)}</Material.Icon>)
 }
 
 const MyStickyHeader = ({children, heightProvider: [currentHeight, heightListeners]}) => {
