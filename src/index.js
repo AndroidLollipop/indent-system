@@ -834,7 +834,7 @@ const Tabs = ({children, selTab, setSelTab, appbarRef}) => {
   const post = [(<Material.Tab style={{opacity: 1, minWidth: 0, minHeight:0, padding: 0}} disableRipple selected label={<Material.IconButton onClick={() => {
     addNewTab()
     setSelTab(Infinity)
-  }} size="small"><AddIcon style={{fill: "rgb(198, 203, 232)"}}/></Material.IconButton>}/>)]
+  }} size="small" className="MuiTab-textColorInherit"><AddIcon style={{color: "white"}}/></Material.IconButton>}/>)]
   return (
     <div>
       <Material.AppBar position="sticky" style={{top: "env(safe-area-inset-top)"}} ref={appbarRef}>
