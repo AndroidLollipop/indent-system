@@ -246,14 +246,6 @@ const readRange = () => {
 }
 
 const submitForm = async (data) => {
-  for (const field in data) {
-    if (field !== "notes" && (typeof data[field] !== "string" || data[field].trim() === "")) {
-      if (fieldToFriendly[field] !== undefined) {
-        return ["FAILED", fieldToFriendly[field] + " cannot be empty"]
-      }
-      return ["FAILED", "Field cannot be empty"]
-    }
-  }
   const system = data.system
   const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
   const sd = Math.min(new Date(fmt(data.startDateTime)))
@@ -271,7 +263,14 @@ const submitForm = async (data) => {
   if ((system !== "Civilian" && timeDelta < 1468800000) || timeDelta < 864000000) {
     return ["FAILED", "This indent is too late. Please discuss this indent manually with the transport clerk."]
   }
-
+  for (const field in data) {
+    if (field !== "notes" && (typeof data[field] !== "string" || data[field].trim() === "")) {
+      if (fieldToFriendly[field] !== undefined) {
+        return ["FAILED", fieldToFriendly[field] + " cannot be empty"]
+      }
+      return ["FAILED", "Field cannot be empty"]
+    }
+  }
   const refresh = await appendDataStore(data)
   if (refresh) {
     notifyNewData()
