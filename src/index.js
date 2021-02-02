@@ -249,11 +249,11 @@ const submitForm = async (data) => {
   const system = data.system
   const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
   const sd = Math.min(new Date(fmt(data.startDateTime)))
-  if (sd === NaN) {
+  if (sd !== sd) {
     return ["FAILED", "Enter a valid start date"]
   }
   const ed = Math.min(new Date(fmt(data.endDateTime)))
-  if (ed === NaN) {
+  if (ed !== ed) {
     return ["FAILED", "Enter a valid end date"]
   }
   if (ed <= sd) {
