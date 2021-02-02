@@ -176,7 +176,7 @@ const DetailGenerator = ({details, heightProvider}) => {
   <div>
     <div style={{height:"12px"}}/>
     <Material.Paper square>
-      <ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{formFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</MyStickyHeader>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
+      <ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{detailFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</MyStickyHeader>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
     </Material.Paper>
     <div style={{height:"12px"}}/>
     <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
@@ -246,9 +246,10 @@ const readRange = () => {
 }
 
 const submitForm = async (data) => {
+  const system = data.system
   const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
   const timeDelta = Math.min(Math.min(new Date(fmt(data.startDateTime)))||Infinity, Math.min(new Date(fmt(data.endDateTime)))||Infinity)-(new Date())
-  if (timeDelta < 1468800000) {
+  if ((system !== "Civilian" && timeDelta < 1468800000) || timeDelta < 864000000) {
     return "FAILED"
   }
   const refresh = await appendDataStore(data)
@@ -275,7 +276,7 @@ const FormFactory = ({fields, defaults, formPersistentStore}) => {
       myStates[i] = x
       myPersistentStore.data = myStates
       setStates(myStates)
-    },field.initialData, field.name, field.friendlyName, field.fieldType])
+    },field.initialData, field.name, field.friendlyName, field.fieldType, field.options])
   }
   const initializeFields = () => {
     const initializedFields = fields.map(x => x.initialData)
@@ -303,7 +304,7 @@ const FormFactory = ({fields, defaults, formPersistentStore}) => {
   return (
   <form noValidate>
   <div>
-  {fieldStates.map(([text, setText, initialData, fieldName, friendlyName, fieldType], index) => {
+  {fieldStates.map(([text, setText, initialData, fieldName, friendlyName, fieldType, options], index) => {
     return (
       <div style={formItemStyle} key={index}>
       {fieldType === "datetime" ?
@@ -313,12 +314,31 @@ const FormFactory = ({fields, defaults, formPersistentStore}) => {
         label={friendlyName}
         type="datetime-local"
         variant="outlined"
+        defaultValue={text}
         onChange={(event) => setText(event.target.value)}
         InputLabelProps={{
           shrink: true,
         }}
         style={{maxWidth: "1000px"}}
       />)
+      :fieldType === "select" ? 
+      (<Material.TextField 
+      fullWidth={true}
+      select
+      label={friendlyName}
+      variant="outlined"
+      defaultValue={text}
+      SelectProps={{
+        native: true
+      }}
+      onChange={(event) => setText(event.target.value)}
+      InputLabelProps={{
+        shrink: true,
+      }}
+      style={{maxWidth: "1000px"}}
+      >
+      {options.map((val, index) => (<option key={index} value={val}>{val}</option>))}
+      </Material.TextField>)
       :(<Material.TextField fullWidth={true} multiline label={friendlyName} variant="outlined" value={text} onChange={(event) => setText(event.target.value)} InputLabelProps={{shrink: true,}} style={{maxWidth: "1000px"}}/>)
       }
       </div>
@@ -363,16 +383,17 @@ const DEBOUNCE_PERIOD = 100
 const transportPersistentStore = {}
 
 const Appointment = (setSelTab) => ({data, children, ...restProps}) => {
+  const system = data.system
   var backgroundColor = "gray"
   if (data.status === "Recommended") {
     backgroundColor = "green"
   }
   else {
     const timeDelta = Math.min(Math.min(new Date(data.startDate))||Infinity, Math.min(new Date(data.endDate))||Infinity)-(new Date())
-    if (timeDelta < 1468800000) {
+    if ((system !== "Civilian" && timeDelta < 1468800000) || timeDelta < 864000000) {
       backgroundColor = "red"
     }
-    else if (timeDelta < 1814400000) {
+    else if ((system !== "Civilian" && timeDelta < 1814400000) || timeDelta < 1209600000) {
       backgroundColor = "rgb(204, 204, 0)"
     }
   }
@@ -624,6 +645,7 @@ const TransportViewStyle = {
 }
 
 const transportItemGenerator = (data, index, setSelTab) => {
+  const system = data.system === "Civilian" ? "Civilian" : "Military"
   const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
   var backgroundColor = "white"
   if (data.status === "Recommended") {
@@ -631,10 +653,10 @@ const transportItemGenerator = (data, index, setSelTab) => {
   }
   else {
     const timeDelta = Math.min(Math.min(new Date(fmt(data.startDateTime)))||Infinity, Math.min(new Date(fmt(data.endDateTime)))||Infinity)-(new Date())
-    if (timeDelta < 1468800000) {
+    if ((system !== "Civilian" && timeDelta < 1468800000) || timeDelta < 864000000) {
       backgroundColor = "rgb(255, 230, 230)"
     }
-    else if (timeDelta < 1814400000) {
+    else if ((system !== "Civilian" && timeDelta < 1814400000) || timeDelta < 1209600000) {
       backgroundColor = "rgb(255, 255, 204)"
     }
   }
@@ -650,6 +672,7 @@ const transportItemGenerator = (data, index, setSelTab) => {
       <Material.TableCell>{data.destination}</Material.TableCell>
       <Material.TableCell>{data.POC}</Material.TableCell>
       <Material.TableCell>{data.POCPhone}</Material.TableCell>
+      <Material.TableCell>{system}</Material.TableCell>
       <Material.TableCell>{data.vehicles}</Material.TableCell>
       <Material.TableCell>{data.notes}</Material.TableCell>
       <Material.TableCell>{data.status}</Material.TableCell>
@@ -667,6 +690,7 @@ const detailItemGenerator = (data, index) => {
       <Material.TableCell>{data.destination}</Material.TableCell>
       <Material.TableCell>{data.POC}</Material.TableCell>
       <Material.TableCell>{data.POCPhone}</Material.TableCell>
+      <Material.TableCell>{data.system === "Civilian" ? "Civilian" : "Military"}</Material.TableCell>
       <Material.TableCell>{data.vehicles}</Material.TableCell>
       <Material.TableCell>{data.notes}</Material.TableCell>
     </Material.TableRow>
@@ -745,11 +769,13 @@ var notificationsStore = []
 
 const statuses = ["Pending", "Submitted", "Recommended", "Hidden"]
 
-const formFields = [{name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes"}]
+const formFields = [{name: "system", initialData: "Military", friendlyName: "Vehicle type", fieldType: "select", options: ["Military", "Civilian"]}, {name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes"}]
 
 const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "Status"}]
 
-const displayFields = [...formFields, ...dataDefaults]
+const detailFields = [...formFields.slice(1, -2), formFields[0], ...formFields.slice(-2)]
+
+const displayFields = [...formFields.slice(1, -2), formFields[0], ...formFields.slice(-2), ...dataDefaults]
 
 const Tabs = ({children, selTab, setSelTab, appbarRef}) => {
   const pre = [(<Material.Tab style={{opacity: 1, minWidth: 0, minHeight:0, padding: 0}} disableRipple selected label={<div style={{height: "48px", width: "48px"}}><img src={appLogo} height="48px" width="48px"/></div>}/>)]
