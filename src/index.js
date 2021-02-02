@@ -23,7 +23,7 @@ import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 import AddIcon from "@material-ui/icons/Add"
 
-const VERSION_NUMBER = "0.1.11a"
+const VERSION_NUMBER = "0.1.12a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -110,7 +110,7 @@ const App = () => {
             setSelTab(currSelTab-1)
           }
         }} details={v} key={v[0]} heightProvider={[currentHeight, heightListeners]} />)
-        : type === "newindent" ? (<NewIndentView mykey={v[0]} label={"new indent"} removable="true" removeCallback={(index, length) => {
+        : type === "newindent" ? (<NewIndentView mykey={v[0]} label="new indent" removable="true" removeCallback={(index, length) => {
           removeTab(v[0])
           const currSelTab = Math.min(selTab, length-1)
           if (currSelTab > index) {
@@ -354,7 +354,7 @@ const FormFactory = ({fields, defaults, formPersistentStore, validator}) => {
         label={friendlyName}
         type="datetime-local"
         variant="outlined"
-        defaultValue={text}
+        value={text}
         onChange={(event) => setText(event.target.value)}
         InputLabelProps={{
           shrink: true,
@@ -367,7 +367,7 @@ const FormFactory = ({fields, defaults, formPersistentStore, validator}) => {
       select
       label={friendlyName}
       variant="outlined"
-      defaultValue={text}
+      value={text}
       SelectProps={{
         native: true
       }}
