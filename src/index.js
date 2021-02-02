@@ -22,7 +22,7 @@ import {
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 
-const VERSION_NUMBER = "0.1.10a"
+const VERSION_NUMBER = "0.1.11a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -88,6 +88,8 @@ const App = () => {
     }
   }, [appbarRef])
 
+  const newIndentPersistentStore = React.useRef({})
+
   return (
     <div>
       <Tabs selTab={selTab} setSelTab={setSelTab} appbarRef={appbarRef}>
@@ -95,7 +97,7 @@ const App = () => {
           <TransportView setSelTab={setSelTab} heightProvider={[currentHeight, heightListeners]} />
         </div>),
         (<div label="new indent" key="defaultTab2" mykey="defaultTab2">
-          <NewIndentView/>
+          <NewIndentView persistentStore={newIndentPersistentStore.current}/>
         </div>),
         (<div label="notifications" key="defaultTab3" mykey="defaultTab3">
           <NotificationsPanel setSelTab={setSelTab}/>
@@ -245,7 +247,7 @@ const readRange = () => {
   return dataStore
 }
 
-const submitForm = async (data) => {
+const newIndentValidator = (data) => {
   const system = data.system
   const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
   const sd = Math.min(new Date(fmt(data.startDateTime)))
@@ -271,6 +273,16 @@ const submitForm = async (data) => {
       return ["FAILED", "Field cannot be empty"]
     }
   }
+  return ["SUCCESS"]
+}
+
+const submitForm = async (data, validator) => {
+  if (typeof validator === "function") {
+    const validated = validator(data)
+    if (validated[0] === "FAILED") {
+      return validated
+    }
+  }
   const refresh = await appendDataStore(data)
   if (refresh) {
     notifyNewData()
@@ -279,7 +291,7 @@ const submitForm = async (data) => {
   return ["UNKNOWN"]
 }
 
-const FormFactory = ({fields, defaults, formPersistentStore}) => {
+const FormFactory = ({fields, defaults, formPersistentStore, validator}) => {
   var fieldStates = []
   var myPersistentStore = formPersistentStore === undefined ? {} : formPersistentStore
   if (myPersistentStore.data === undefined) {
@@ -311,7 +323,7 @@ const FormFactory = ({fields, defaults, formPersistentStore}) => {
       const normalizer = normalizers[fieldType]
       constitutedObject[fieldName] = normalizer ? normalizer(text) : text
     }
-    const [result, params] = await submitForm(constitutedObject)
+    const [result, params] = await submitForm(constitutedObject, validator)
     if (result === "SUCCESS") {
       alert("Indent submitted successfully!")
       initializeFields()
@@ -391,10 +403,8 @@ const formItemStyle = {
   paddingBottom: "7px"
 }
 
-const newIndentPersistentStore = {}
-
-const NewIndentView = () => {
-  return (<div style={TransportViewStyle}><div style={{height: "12px"}}/><FormFactory fields={formFields} defaults={dataDefaults} formPersistentStore={newIndentPersistentStore}/></div>)
+const NewIndentView = ({persistentStore}) => {
+  return (<div style={TransportViewStyle}><div style={{height: "12px"}}/><FormFactory fields={formFields} defaults={dataDefaults} formPersistentStore={persistentStore} validator={newIndentValidator}/></div>)
 }
 
 const DEBOUNCE_PERIOD = 100
