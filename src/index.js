@@ -246,18 +246,38 @@ const readRange = () => {
 }
 
 const submitForm = async (data) => {
+  for (const field in data) {
+    if (field !== "notes" && (typeof data[field] !== "string" || data[field].trim() === "")) {
+      if (fieldToFriendly[field] !== undefined) {
+        return ["FAILED", fieldToFriendly[field] + " cannot be empty"]
+      }
+      return ["FAILED", "Field cannot be empty"]
+    }
+  }
   const system = data.system
   const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
-  const timeDelta = Math.min(Math.min(new Date(fmt(data.startDateTime)))||Infinity, Math.min(new Date(fmt(data.endDateTime)))||Infinity)-(new Date())
-  if ((system !== "Civilian" && timeDelta < 1468800000) || timeDelta < 864000000) {
-    return "FAILED"
+  const sd = Math.min(new Date(fmt(data.startDateTime)))
+  if (sd === NaN) {
+    return ["FAILED", "Enter a valid start date"]
   }
+  const ed = Math.min(new Date(fmt(data.endDateTime)))
+  if (ed === NaN) {
+    return ["FAILED", "Enter a valid end date"]
+  }
+  if (ed <= sd) {
+    return ["FAILED", "End date must be after start date"]
+  }
+  const timeDelta = Math.min(sd||Infinity, ed||Infinity)-(new Date())
+  if ((system !== "Civilian" && timeDelta < 1468800000) || timeDelta < 864000000) {
+    return ["FAILED", "This indent is too late. Please discuss this indent manually with the transport clerk."]
+  }
+
   const refresh = await appendDataStore(data)
   if (refresh) {
     notifyNewData()
-    return "SUCCESS"
+    return ["SUCCESS"]
   }
-  return "UNKNOWN"
+  return ["UNKNOWN"]
 }
 
 const FormFactory = ({fields, defaults, formPersistentStore}) => {
@@ -292,13 +312,13 @@ const FormFactory = ({fields, defaults, formPersistentStore}) => {
       const normalizer = normalizers[fieldType]
       constitutedObject[fieldName] = normalizer ? normalizer(text) : text
     }
-    const result = await submitForm(constitutedObject)
+    const [result, params] = await submitForm(constitutedObject)
     if (result === "SUCCESS") {
       alert("Indent submitted successfully!")
       initializeFields()
     }
     else if (result === "FAILED") {
-      alert("This indent is too late. Please discuss this indent manually with the transport clerk.")
+      alert(params)
     }
   }
   return (
@@ -776,6 +796,12 @@ const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "St
 const detailFields = [...formFields.slice(1, -2), formFields[0], ...formFields.slice(-2)]
 
 const displayFields = [...formFields.slice(1, -2), formFields[0], ...formFields.slice(-2), ...dataDefaults]
+
+const fieldToFriendly = {}
+
+for (const description of displayFields) {
+  fieldToFriendly[description.name] = description.friendlyName
+}
 
 const Tabs = ({children, selTab, setSelTab, appbarRef}) => {
   const pre = [(<Material.Tab style={{opacity: 1, minWidth: 0, minHeight:0, padding: 0}} disableRipple selected label={<div style={{height: "48px", width: "48px"}}><img src={appLogo} height="48px" width="48px"/></div>}/>)]
