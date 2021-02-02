@@ -21,6 +21,7 @@ import {
 
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
+import AddIcon from "@material-ui/icons/Add"
 
 const VERSION_NUMBER = "0.1.11a"
 console.log(VERSION_NUMBER)
@@ -31,14 +32,15 @@ var serverURL = "https://murmuring-ocean-38436.herokuapp.com/"
 
 var setTabs
 var additionalTabs = []
-var tabID = 0
+const RESERVED_TABS = 1
+var tabID = RESERVED_TABS
 const addTab = (tab) => {
   additionalTabs = [...additionalTabs]
   additionalTabs.push(tab)
   setTabs(additionalTabs)
 }
 const removeTab = (id) => {
-  additionalTabs = [...additionalTabs].filter(x => x[0] !== id)
+  additionalTabs = [...additionalTabs].filter(x => x.params[0] !== id)
   detailPersistentStore[id] = undefined
   setTabs(additionalTabs)
 }
@@ -97,17 +99,24 @@ const App = () => {
           <TransportView setSelTab={setSelTab} heightProvider={[currentHeight, heightListeners]} />
         </div>),
         (<div label="new indent" key="defaultTab2" mykey="defaultTab2">
-          <NewIndentView persistentStore={newIndentPersistentStore.current}/>
+          <NewIndentView id={0}/>
         </div>),
         (<div label="notifications" key="defaultTab3" mykey="defaultTab3">
           <NotificationsPanel setSelTab={setSelTab}/>
-        </div>), ...tabs.map((v, i) => (<DetailGenerator mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={(index, length) => {
+        </div>), ...tabs.map(({type, params: v}, i) => type === "detail" ? (<DetailGenerator mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={(index, length) => {
           removeTab(v[0])
           const currSelTab = Math.min(selTab, length-1)
           if (currSelTab > index) {
             setSelTab(currSelTab-1)
           }
-        }} details={v} key={v[0]} heightProvider={[currentHeight, heightListeners]} />))]}
+        }} details={v} key={v[0]} heightProvider={[currentHeight, heightListeners]} />)
+        : type === "newindent" ? (<NewIndentView mykey={v[0]} label={"new indent"} removable="true" removeCallback={(index, length) => {
+          removeTab(v[0])
+          const currSelTab = Math.min(selTab, length-1)
+          if (currSelTab > index) {
+            setSelTab(currSelTab-1)
+          }
+        }} id={v[0]} key={v[0]}/>) : (<div></div>))]}
       </Tabs>
       <div style={{height: "12px"}}/>
       <img src={sir5logo} width="192px"/>
@@ -403,8 +412,11 @@ const formItemStyle = {
   paddingBottom: "7px"
 }
 
-const NewIndentView = ({persistentStore}) => {
-  return (<div style={TransportViewStyle}><div style={{height: "12px"}}/><FormFactory fields={formFields} defaults={dataDefaults} formPersistentStore={persistentStore} validator={newIndentValidator}/></div>)
+const NewIndentView = ({id}) => {
+  if (detailPersistentStore[id] === undefined) {
+    detailPersistentStore[id] = {}
+  }
+  return (<div style={TransportViewStyle}><div style={{height: "12px"}}/><FormFactory fields={formFields} defaults={dataDefaults} formPersistentStore={detailPersistentStore[id]} validator={newIndentValidator}/></div>)
 }
 
 const DEBOUNCE_PERIOD = 100
@@ -747,7 +759,12 @@ const notificationItemStyle = (latest) => {
 }
 
 const addDetailTab = (data, index) => {
-  addTab([tabID, index])
+  addTab({type: "detail", params: [tabID, index]})
+  tabID++
+}
+
+const addNewTab = () => {
+  addTab({type: "newindent", params: [tabID]})
   tabID++
 }
 
@@ -814,6 +831,10 @@ for (const description of displayFields) {
 
 const Tabs = ({children, selTab, setSelTab, appbarRef}) => {
   const pre = [(<Material.Tab style={{opacity: 1, minWidth: 0, minHeight:0, padding: 0}} disableRipple selected label={<div style={{height: "48px", width: "48px"}}><img src={appLogo} height="48px" width="48px"/></div>}/>)]
+  const post = [(<Material.Tab style={{opacity: 1, minWidth: 0, minHeight:0, padding: 0}} disableRipple selected label={<Material.IconButton onClick={() => {
+    addNewTab()
+    setSelTab(Infinity)
+  }} size="small"><AddIcon style={{fill: "rgb(198, 203, 232)"}}/></Material.IconButton>}/>)]
   return (
     <div>
       <Material.AppBar position="sticky" style={{top: "env(safe-area-inset-top)"}} ref={appbarRef}>
@@ -821,7 +842,7 @@ const Tabs = ({children, selTab, setSelTab, appbarRef}) => {
           {[...pre , ...children.map((child, index) => {
             const obj = {...child.props, removeCallback: () => child.props.removeCallback(index, children.length), onClick: () => {setSelTab(index)}, active: index === Math.min(selTab, children.length-1), key: child.props.mykey}
             return (<Tab {...obj}></Tab>)
-          })]}
+          }), ...post]}
         </Material.Tabs>
       </Material.AppBar>
       <div>
