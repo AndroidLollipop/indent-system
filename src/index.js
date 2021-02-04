@@ -23,7 +23,7 @@ import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 import AddIcon from "@material-ui/icons/Add"
 
-const VERSION_NUMBER = "0.1.12a"
+const VERSION_NUMBER = "0.1.15a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -599,8 +599,7 @@ const TRANSITION_STRING = `all ${ANIMATION_TIME}s linear`
 
 const synchronousAnimationProvider = (ref, onAnimationCollapse) => {
   const processEnd = () => {
-    const width = ref.current.getBoundingClientRect().width
-    if (width === 0) {
+    if (ref.current.getBoundingClientRect().width === 0) {
       onAnimationCollapse()
     }
   }
@@ -614,9 +613,7 @@ const synchronousAnimationProvider = (ref, onAnimationCollapse) => {
     else if (change === "collapse") {
       ref.current.classList.remove("expanded")
       ref.current.classList.add("collapsed")
-      if (ref.current.getBoundingClientRect().width === 0) {
-        onAnimationCollapse()
-      }
+      processEnd()
     }
   }
   return requestChange
