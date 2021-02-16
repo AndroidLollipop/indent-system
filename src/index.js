@@ -379,6 +379,18 @@ const FormFactory = ({fields, defaults, formPersistentStore, validator}) => {
       >
       {options.map((val, index) => (<option key={index} value={val}>{val}</option>))}
       </Material.TextField>)
+      :fieldType === "multi" ?
+      (<Material.TextField
+      fullWidth={true}
+      multiline
+      label={friendlyName}
+      variant="outlined"
+      value={text[0] ?? ""}
+      onChange={(event) => setText([event.target.value])}
+      InputLabelProps={{
+        shrink: true
+      }}
+      style={{maxWidth: "1000px"}}/>)
       :(<Material.TextField fullWidth={true} multiline label={friendlyName} variant="outlined" value={text} onChange={(event) => setText(event.target.value)} InputLabelProps={{shrink: true,}} style={{maxWidth: "1000px"}}/>)
       }
       </div>
@@ -812,13 +824,13 @@ var notificationsStore = []
 
 const statuses = ["Pending", "Submitted", "Recommended", "Hidden"]
 
-const formFields = [{name: "system", initialData: "Military", friendlyName: "Vehicle type", fieldType: "select", options: ["Military", "Civilian"]}, {name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes"}]
+const formFields = [{name: "emailsNotify", initialData: [], friendlyName: "Email", fieldType: "multi", persistent: true}, {name: "system", initialData: "Military", friendlyName: "Vehicle type", fieldType: "select", options: ["Military", "Civilian"]}, {name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes"}]
 
 const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "Status"}]
 
-const detailFields = [...formFields.slice(1, -2), formFields[0], ...formFields.slice(-2)]
+const detailFields = [...formFields.slice(2, -2), formFields[1], ...formFields.slice(-2)]
 
-const displayFields = [...formFields.slice(1, -2), formFields[0], ...formFields.slice(-2), ...dataDefaults]
+const displayFields = [...formFields.slice(2, -2), formFields[1], ...formFields.slice(-2), ...dataDefaults]
 
 const fieldToFriendly = {}
 
