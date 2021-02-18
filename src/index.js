@@ -201,6 +201,7 @@ const DetailGenerator = ({details, heightProvider}) => {
         {statuses.map((val, index) => (<option key={index} value={val}>{val}</option>))}
         </Material.Select>
       </div>
+      <div style={{display:"inline-block", width:"0.75px"}}/>
       <div style={{display:"inline", verticalAlign:"middle"}}>
         <Material.Button variant="outlined" onClick={() => {editData(index, detailPersistentStore[id])}}>Save</Material.Button>
       </div>
