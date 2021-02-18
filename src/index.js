@@ -110,7 +110,7 @@ const App = () => {
             setSelTab(currSelTab-1)
           }
         }} details={v} key={v[0]} heightProvider={[currentHeight, heightListeners]} />)
-        : type === "newindent" ? (<NewIndentView mykey={v[0]} label="new indent" removable="true" removeCallback={(index, length) => {
+        : type === "newindent" ? (<NewIndentView cloneID={v[1]} mykey={v[0]} label="new indent" removable="true" removeCallback={(index, length) => {
           removeTab(v[0])
           const currSelTab = Math.min(selTab, length-1)
           if (currSelTab > index) {
@@ -190,6 +190,7 @@ const DetailGenerator = ({details, heightProvider}) => {
       <ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{detailFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</MyStickyHeader>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
     </Material.Paper>
     <div style={{height:"12px"}}/>
+    <Material.Button variant="outlined" onClick={() => {addNewTab(data.internalUID)}}>Copy</Material.Button>
     <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
       detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
       setData(detailPersistentStore[id])
@@ -300,11 +301,19 @@ const submitForm = async (data, validator) => {
   return ["UNKNOWN"]
 }
 
-const FormFactory = ({fields, defaults, formPersistentStore, validator}) => {
+const FormFactory = ({prefill, fields, defaults, formPersistentStore, validator}) => {
   var fieldStates = []
   var myPersistentStore = formPersistentStore === undefined ? {} : formPersistentStore
   if (myPersistentStore.data === undefined) {
-    myPersistentStore.data = fields.map(x => x.initialData)
+    myPersistentStore.data = fields.map(x => {
+      if (typeof prefill === "object") {
+        const prefilledField = prefill[x.name]
+        if (prefilledField !== undefined) {
+          return prefilledField
+        }
+      }
+      return x.initialData
+    })
   }
   const [states, setStates] = React.useState(myPersistentStore.data)
   var myStates = states
@@ -424,11 +433,12 @@ const formItemStyle = {
   paddingBottom: "7px"
 }
 
-const NewIndentView = ({id}) => {
+const NewIndentView = ({id, cloneID}) => {
   if (detailPersistentStore[id] === undefined) {
     detailPersistentStore[id] = {}
   }
-  return (<div style={TransportViewStyle}><div style={{height: "12px"}}/><FormFactory fields={formFields} defaults={dataDefaults} formPersistentStore={detailPersistentStore[id]} validator={newIndentValidator}/></div>)
+  const prefill = useMemo(() => cloneID !== undefined ? readDataStore(cloneID) : undefined, [cloneID, dataDefaults])
+  return (<div style={TransportViewStyle}><div style={{height: "12px"}}/><FormFactory prefill={prefill} fields={formFields} defaults={dataDefaults} formPersistentStore={detailPersistentStore[id]} validator={newIndentValidator}/></div>)
 }
 
 const DEBOUNCE_PERIOD = 100
@@ -772,8 +782,8 @@ const addDetailTab = (data, index) => {
   tabID++
 }
 
-const addNewTab = () => {
-  addTab({type: "newindent", params: [tabID]})
+const addNewTab = (cloneID) => {
+  addTab({type: "newindent", params: [tabID, cloneID]})
   tabID++
 }
 
