@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.js": "/indent-system/static/js/main.461c6a00.chunk.js",
-    "main.js.map": "/indent-system/static/js/main.461c6a00.chunk.js.map",
+    "main.js": "/indent-system/static/js/main.4274891f.chunk.js",
+    "main.js.map": "/indent-system/static/js/main.4274891f.chunk.js.map",
     "runtime-main.js": "/indent-system/static/js/runtime-main.e92cea01.js",
     "runtime-main.js.map": "/indent-system/static/js/runtime-main.e92cea01.js.map",
     "static/js/2.06f3fd1a.chunk.js": "/indent-system/static/js/2.06f3fd1a.chunk.js",
@@ -14,6 +14,6 @@
   "entrypoints": [
     "static/js/runtime-main.e92cea01.js",
     "static/js/2.06f3fd1a.chunk.js",
-    "static/js/main.461c6a00.chunk.js"
+    "static/js/main.4274891f.chunk.js"
   ]
 }
