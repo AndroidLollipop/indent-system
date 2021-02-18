@@ -275,7 +275,7 @@ const newIndentValidator = (data) => {
     return ["FAILED", "This indent is too late. Please discuss this indent manually with the transport clerk."]
   }
   for (const field in data) {
-    if (field !== "notes" && (typeof data[field] !== "string" || data[field].trim() === "")) {
+    if (fieldAttributes[field].optional !== true && (typeof data[field] !== "string" || data[field].trim() === "")) {
       if (fieldToFriendly[field] !== undefined) {
         return ["FAILED", fieldToFriendly[field] + " cannot be empty"]
       }
@@ -824,7 +824,7 @@ var notificationsStore = []
 
 const statuses = ["Pending", "Submitted", "Recommended", "Hidden"]
 
-const formFields = [{name: "emailsNotify", initialData: [], friendlyName: "Email", fieldType: "multi", persistent: true}, {name: "system", initialData: "Military", friendlyName: "Vehicle type", fieldType: "select", options: ["Military", "Civilian"]}, {name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes"}]
+const formFields = [{name: "emailsNotify", initialData: [], friendlyName: "Email", fieldType: "multi", persistent: true, optional: true}, {name: "system", initialData: "Military", friendlyName: "Vehicle type", fieldType: "select", options: ["Military", "Civilian"]}, {name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes", optional: true}]
 
 const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "Status"}]
 
@@ -834,8 +834,14 @@ const displayFields = [...formFields.slice(2, -2), formFields[1], ...formFields.
 
 const fieldToFriendly = {}
 
+const fieldAttributes = {}
+
 for (const description of displayFields) {
   fieldToFriendly[description.name] = description.friendlyName
+}
+
+for (const description of [...formFields, ...dataDefaults]) {
+  fieldAttributes[description.name] = {persistent: description.persistent, optional: description.optional}
 }
 
 const Tabs = ({children, selTab, setSelTab, appbarRef}) => {
