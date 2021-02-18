@@ -23,7 +23,7 @@ import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 import AddIcon from "@material-ui/icons/Add"
 
-const VERSION_NUMBER = "0.1.15a"
+const VERSION_NUMBER = "0.1.17a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -191,6 +191,7 @@ const DetailGenerator = ({details, heightProvider}) => {
     </Material.Paper>
     <div style={{height:"12px"}}/>
     <Material.Button variant="outlined" onClick={() => {addNewTab(data.internalUID)}}>Copy</Material.Button>
+    <div style={{height:"12px"}}/>
     <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
       detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
       setData(detailPersistentStore[id])
@@ -309,6 +310,10 @@ const FormFactory = ({prefill, fields, defaults, formPersistentStore, validator}
       if (typeof prefill === "object") {
         const prefilledField = prefill[x.name]
         if (prefilledField !== undefined) {
+          const prefillConverter = prefillConverters[x.name]
+          if (typeof prefillConverter === "function") {
+            return prefillConverter(prefilledField)
+          }
           return prefilledField
         }
       }
@@ -437,7 +442,7 @@ const NewIndentView = ({id, cloneID}) => {
   if (detailPersistentStore[id] === undefined) {
     detailPersistentStore[id] = {}
   }
-  const prefill = useMemo(() => cloneID !== undefined ? readDataStore(cloneID) : undefined, [cloneID, dataDefaults])
+  const prefill = React.useMemo(() => cloneID !== undefined ? readDataStore(cloneID) : undefined, [cloneID, dataDefaults])
   return (<div style={TransportViewStyle}><div style={{height: "12px"}}/><FormFactory prefill={prefill} fields={formFields} defaults={dataDefaults} formPersistentStore={detailPersistentStore[id]} validator={newIndentValidator}/></div>)
 }
 
@@ -845,6 +850,11 @@ const displayFields = [...formFields.slice(2, -2), formFields[1], ...formFields.
 const fieldToFriendly = {}
 
 const fieldAttributes = {}
+
+const prefillConverters = {
+  "startDateTime": str => new Date(str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)).toISOString().substring(0, 16),
+  "endDateTime": str => new Date(str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)).toISOString().substring(0, 16)
+}
 
 for (const description of displayFields) {
   fieldToFriendly[description.name] = description.friendlyName
