@@ -192,13 +192,19 @@ const DetailGenerator = ({details, heightProvider}) => {
     <div style={{height:"12px"}}/>
     <Material.Button variant="outlined" onClick={() => {addNewTab(data.internalUID)}}>Copy</Material.Button>
     <div style={{height:"12px"}}/>
-    <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
-      detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
-      setData(detailPersistentStore[id])
-    }}>
-    {statuses.map((val, index) => (<option key={index} value={val}>{val}</option>))}
-    </Material.Select>
-    <Material.Button variant="outlined" onClick={() => {editData(index, detailPersistentStore[id])}}>Save</Material.Button>
+    <div>
+      <div style={{display:"inline", verticalAlign:"middle"}}>
+        <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
+          detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
+          setData(detailPersistentStore[id])
+        }}>
+        {statuses.map((val, index) => (<option key={index} value={val}>{val}</option>))}
+        </Material.Select>
+      </div>
+      <div style={{display:"inline", verticalAlign:"middle"}}>
+        <Material.Button variant="outlined" onClick={() => {editData(index, detailPersistentStore[id])}}>Save</Material.Button>
+      </div>
+    </div>
   </div>
   )
 }
