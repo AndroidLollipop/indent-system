@@ -103,7 +103,7 @@ const App = () => {
         </div>),
         (<div label="notifications" key="defaultTab3" mykey="defaultTab3">
           <NotificationsPanel setSelTab={setSelTab}/>
-        </div>), ...tabs.map(({type, params: v}, i) => type === "detail" ? (<DetailGenerator mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={(index, length) => {
+        </div>), ...tabs.map(({type, params: v}, i) => type === "detail" ? (<DetailGenerator setSelTab={setSelTab} mykey={v[0]} label={readDataStore(v[1]).name} removable="true" removeCallback={(index, length) => {
           removeTab(v[0])
           const currSelTab = Math.min(selTab, length-1)
           if (currSelTab > index) {
@@ -177,7 +177,7 @@ const NotificationsPanel = ({setSelTab}) => {
 
 const detailPersistentStore = {}
 
-const DetailGenerator = ({details, heightProvider}) => {
+const DetailGenerator = ({setSelTab, details, heightProvider}) => {
   const [id, index] = details
   if (detailPersistentStore[id] === undefined) {
     detailPersistentStore[id] = readDataStore(index)
@@ -190,7 +190,10 @@ const DetailGenerator = ({details, heightProvider}) => {
       <ListFactory header={(<MyStickyHeader heightProvider={heightProvider}>{detailFields.map((x, index) => (<Material.TableCell key={index}>{x.friendlyName}</Material.TableCell>))}</MyStickyHeader>)} data={[data]} generator={x => detailItemGenerator(x, x.internalUID)} style={TransportViewStyle}/>
     </Material.Paper>
     <div style={{height:"12px"}}/>
-    <Material.Button variant="outlined" onClick={() => {addNewTab(data.internalUID)}}>Copy</Material.Button>
+    <Material.Button variant="outlined" onClick={() => {
+      addNewTab(data.internalUID)
+      setSelTab(Infinity)
+    }}>Copy</Material.Button>
     <div style={{height:"12px"}}/>
     <div>
       <div style={{display:"inline", verticalAlign:"middle"}}>
