@@ -23,7 +23,7 @@ import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 import AddIcon from "@material-ui/icons/Add"
 
-const VERSION_NUMBER = "0.1.17a"
+const VERSION_NUMBER = "0.1.18a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -495,7 +495,7 @@ const TransportView = ({setSelTab, heightProvider}) => {
     transportPersistentStore.sort = null
     transportPersistentStore.up = true
     transportPersistentStore.view = "list"
-    transportPersistentStore.selDate = (new Date()).toISOString().slice(0, 10)
+    transportPersistentStore.selDate = (x => (x.setMinutes(x.getMinutes()-x.getTimezoneOffset()), x))(new Date()).toISOString().slice(0, 10)
   }
   const range = readRange()
   React.useEffect(() => {
@@ -862,8 +862,16 @@ const fieldToFriendly = {}
 const fieldAttributes = {}
 
 const prefillConverters = {
-  "startDateTime": str => new Date(str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)).toISOString().substring(0, 16),
-  "endDateTime": str => new Date(str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)).toISOString().substring(0, 16)
+  "startDateTime": str => {
+    const date = new Date(str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16))
+    date.setMinutes(date.getMinutes()-date.getTimezoneOffset())
+    return date.toISOString().substring(0, 16)
+  },
+  "endDateTime": str => {
+    const date = new Date(str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16))
+    date.setMinutes(date.getMinutes()-date.getTimezoneOffset())
+    return date.toISOString().substring(0, 16)
+  }
 }
 
 for (const description of displayFields) {
