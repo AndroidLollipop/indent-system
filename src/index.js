@@ -23,7 +23,7 @@ import CalendarTodayIcon from "@material-ui/icons/CalendarToday"
 import ListIcon from "@material-ui/icons/List"
 import AddIcon from "@material-ui/icons/Add"
 
-const VERSION_NUMBER = "0.1.18a"
+const VERSION_NUMBER = "0.1.19a"
 console.log(VERSION_NUMBER)
 
 const ranker = require("./searchRanker.js")
@@ -537,8 +537,9 @@ const TransportView = ({setSelTab, heightProvider}) => {
   const [isUp, setUp] = React.useState(transportPersistentStore.up)
   const filteredData = React.useMemo(() => data.filter(x => x.status !== "Hidden"), [data])
   const sortedData = React.useMemo(() => mySort === null ? filteredData : filteredData.map((x, index) => [x, index]).sort(([dx, ix], [dy, iy]) => {
-    const x = dx[mySort]
-    const y = dy[mySort]
+    const materializer = typeof sortMaterializers[mySort] === "function" ? sortMaterializers[mySort] : x => x
+    const x = materializer(dx[mySort])
+    const y = materializer(dy[mySort])
     if (typeof x === typeof y && x !== y) {
       if (typeof x === "string") {
         for (var i = 0; i < Math.min(x.length, y.length); i++) {
@@ -871,6 +872,17 @@ const prefillConverters = {
     const date = new Date(str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16))
     date.setMinutes(date.getMinutes()-date.getTimezoneOffset())
     return date.toISOString().substring(0, 16)
+  }
+}
+
+const sortMaterializers = {
+  "startDateTime": str => {
+    const date = new Date(str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16))
+    return date.getTime()
+  },
+  "endDateTime": str => {
+    const date = new Date(str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16))
+    return date.getTime()
   }
 }
 
