@@ -494,8 +494,11 @@ const transportPersistentStore = {}
 const Appointment = (setSelTab) => ({data, children, ...restProps}) => {
   const system = data.system
   var backgroundColor = "gray"
-  if (data.status === "Recommended") {
+  if (data.status === "Confirmed") {
     backgroundColor = "green"
+  }
+  else if (data.status === "Recommended") {
+    backgroundColor = "rgb(77, 77, 77)"
   }
   else {
     const timeDelta = Math.min(Math.min(new Date(data.startDate))||Infinity, Math.min(new Date(data.endDate))||Infinity)-(new Date())
@@ -755,8 +758,11 @@ const transportItemGenerator = (data, index, setSelTab) => {
   const system = data.system === "Civilian" ? "Civilian" : "Military"
   const fmt = str => str.slice(6,10)+"-"+str.slice(3,5)+"-"+str.slice(0,2)+"T"+str.slice(11,16)
   var backgroundColor = "white"
-  if (data.status === "Recommended") {
+  if (data.status === "Confirmed") {
     backgroundColor = "rgb(230, 255, 230)"
+  }
+  else if (data.status === "Recommended") {
+    backgroundColor = "rgb(238, 238, 238)"
   }
   else {
     const timeDelta = Math.min(Math.min(new Date(fmt(data.startDateTime)))||Infinity, Math.min(new Date(fmt(data.endDateTime)))||Infinity)-(new Date())
@@ -879,7 +885,7 @@ const readNotifications = () => {
 
 var notificationsStore = []
 
-const statuses = ["Pending", "Submitted", "Recommended", "Hidden"]
+const statuses = ["Pending", "Submitted", "Recommended", "Confirmed", "Hidden"]
 
 const formFields = [{name: "emailsNotify", initialData: [], friendlyName: "Email", fieldType: "multi", persistent: true, optional: true}, {name: "system", initialData: "Military", friendlyName: "Vehicle type", fieldType: "select", options: ["Military", "Civilian"]}, {name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes", optional: true}]
 
