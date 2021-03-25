@@ -647,7 +647,8 @@ const TransportView = ({setSelTab, heightProvider}) => {
             endDate: fmt(x.endDateTime),
             title: x.name,
             internalUID: x.internalUID,
-            status: x.status
+            status: x.status,
+            system: x.system
           }
         })}>
           <ViewState defaultCurrentDate={selDate} onCurrentDateChange={date => {
