@@ -219,6 +219,7 @@ const DetailGenerator = ({setSelTab, details, heightProvider}) => {
         <Material.TextField fullWidth={true} multiline label={"Additional Info"} variant="outlined" value={data.addInfo} onChange={
           (event) => {
             detailPersistentStore[id] = {...detailPersistentStore[id], addInfo: event.target.value}
+            setData(detailPersistentStore[id])
           }
         } InputLabelProps={{shrink: true,}} style={{maxWidth: "1000px"}}/>
       </div>
