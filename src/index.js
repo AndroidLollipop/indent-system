@@ -216,6 +216,16 @@ const DetailGenerator = ({setSelTab, details, heightProvider}) => {
     <div style={{height:"12px"}}/>
     <div>
       <div style={{display:"inline", verticalAlign:"middle"}}>
+        <Material.TextField fullWidth={true} multiline label={"Additional Info"} variant="outlined" value={data.addInfo} onChange={
+          (event) => {
+            detailPersistentStore[id] = {...detailPersistentStore[id], addInfo: event.target.value}
+          }
+        } InputLabelProps={{shrink: true,}} style={{maxWidth: "1000px"}}/>
+      </div>
+    </div>
+    <div style={{height:"12px"}}/>
+    <div>
+      <div style={{display:"inline", verticalAlign:"middle"}}>
         <Material.Select variant="outlined" native value={data.status} onChange={(event) => {
           detailPersistentStore[id] = {...detailPersistentStore[id], status: event.target.value}
           setData(detailPersistentStore[id])
@@ -789,6 +799,7 @@ const transportItemGenerator = (data, index, setSelTab) => {
       <Material.TableCell>{system}</Material.TableCell>
       <Material.TableCell>{data.vehicles}</Material.TableCell>
       <Material.TableCell>{data.notes}</Material.TableCell>
+      <Material.TableCell>{data.addInfo}</Material.TableCell>
       <Material.TableCell>{data.status}</Material.TableCell>
     </Material.TableRow>
   )
@@ -890,7 +901,7 @@ const statuses = ["Pending", "Submitted", "Recommended", "Confirmed", "Hidden"]
 
 const formFields = [{name: "emailsNotify", initialData: [], friendlyName: "Email", fieldType: "multi", persistent: true, optional: true}, {name: "system", initialData: "Military", friendlyName: "Vehicle type", fieldType: "select", options: ["Military", "Civilian"]}, {name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes", optional: true}]
 
-const dataDefaults = [{name: "status", initialData: "Pending", friendlyName: "Status"}]
+const dataDefaults = [{name: "addInfo", initialData: "", friendlyName: "Additional Info"}, {name: "status", initialData: "Pending", friendlyName: "Status"}]
 
 const detailFields = [...formFields.slice(2, -2), formFields[1], ...formFields.slice(-2)]
 
