@@ -216,12 +216,12 @@ const DetailGenerator = ({setSelTab, details, heightProvider}) => {
     <div style={{height:"12px"}}/>
     <div>
       <div style={{display:"inline", verticalAlign:"middle"}}>
-        <Material.TextField fullWidth={true} multiline label={"Additional Info"} variant="outlined" value={data.addInfo} onChange={
-          (event) => {
+        <div style={formItemStyle}>
+          <Material.TextField fullWidth={true} multiline label={"Additional Info"} variant="outlined" value={data.addInfo} onChange={(event) => {
             detailPersistentStore[id] = {...detailPersistentStore[id], addInfo: event.target.value}
             setData(detailPersistentStore[id])
-          }
-        } InputLabelProps={{shrink: true,}} style={{maxWidth: "1000px"}}/>
+          }} InputLabelProps={{shrink: true,}} style={{maxWidth: "1000px"}}/>
+        </div>
       </div>
     </div>
     <div style={{height:"12px"}}/>
