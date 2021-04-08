@@ -902,7 +902,7 @@ const statuses = ["Pending", "Submitted", "Recommended", "Confirmed", "Hidden"]
 
 const formFields = [{name: "emailsNotify", initialData: [], friendlyName: "Email", fieldType: "multi", persistent: true, optional: true}, {name: "system", initialData: "Military", friendlyName: "Vehicle type", fieldType: "select", options: ["Military", "Civilian"]}, {name: "name", initialData: "", friendlyName: "Purpose"}, {name: "startDateTime", initialData: "", friendlyName: "Start time", fieldType: "datetime"}, {name: "endDateTime", initialData: "", friendlyName: "End time", fieldType: "datetime"}, {name: "origin", initialData: "", friendlyName: "Reporting location"}, {name: "destination", initialData: "", friendlyName: "Destination"}, {name: "POC", initialData: "", friendlyName: "Contact person"}, {name: "POCPhone", initialData: "", friendlyName: "Contact person number"}, {name: "vehicles", initialData: "", friendlyName: "Vehicles"}, {name: "notes", initialData: "", friendlyName: "Notes", optional: true}]
 
-const dataDefaults = [{name: "addInfo", initialData: "", friendlyName: "Additional Info"}, {name: "status", initialData: "Pending", friendlyName: "Status"}]
+const dataDefaults = [{name: "addInfo", initialData: "", friendlyName: "Additional Info", optional: true}, {name: "status", initialData: "Pending", friendlyName: "Status"}]
 
 const detailFields = [...formFields.slice(2, -2), formFields[1], ...formFields.slice(-2)]
 
