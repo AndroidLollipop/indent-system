@@ -802,7 +802,6 @@ const transportItemGenerator = (data, index, setSelTab) => {
       <Material.TableCell>{data.destination}</Material.TableCell>
       <Material.TableCell>{data.POC}</Material.TableCell>
       <Material.TableCell>{data.POCPhone}</Material.TableCell>
-      <Material.TableCell>{system}</Material.TableCell>
       <Material.TableCell>{data.vehicles}</Material.TableCell>
       <Material.TableCell>{data.notes}</Material.TableCell>
       <Material.TableCell>{data.addInfo}</Material.TableCell>
@@ -911,7 +910,7 @@ const dataDefaults = [{name: "addInfo", initialData: "", friendlyName: "Addition
 
 const detailFields = [...formFields.slice(2, -2), formFields[1], ...formFields.slice(-2)]
 
-const displayFields = [...formFields.slice(2, -2), formFields[1], ...formFields.slice(-2), ...dataDefaults]
+const displayFields = [...formFields.slice(2, -2), ...formFields.slice(-2), ...dataDefaults]
 
 const fieldToFriendly = {}
 
@@ -941,11 +940,8 @@ const sortMaterializers = {
   }
 }
 
-for (const description of displayFields) {
-  fieldToFriendly[description.name] = description.friendlyName
-}
-
 for (const description of [...formFields, ...dataDefaults]) {
+  fieldToFriendly[description.name] = description.friendlyName
   fieldAttributes[description.name] = {persistent: description.persistent, optional: description.optional}
 }
 
