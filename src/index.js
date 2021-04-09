@@ -117,10 +117,10 @@ const App = () => {
   return (
     <div>
       <Tabs childWrapper={ScrollWrapper} childContext={childScrollContext} selTab={selTab} setSelTab={setSelTab} appbarRef={appbarRef}>
-        {[(<div label="military indents" key="defaultTab0" mykey="defaultTab0">
+        {[(<div label="military" key="defaultTab0" mykey="defaultTab0">
           <TransportView setSelTab={setSelTab} heightProvider={[currentHeight, heightListeners]} transportPersistentStore={militaryPersistentStore.current} filter={militaryFilter}/>
         </div>),
-        (<div label="civilian indents" key="defaultTab1" mykey="defaultTab1">
+        (<div label="civilian" key="defaultTab1" mykey="defaultTab1">
           <TransportView setSelTab={setSelTab} heightProvider={[currentHeight, heightListeners]} transportPersistentStore={civilianPersistentStore.current} filter={civilianFilter}/>
         </div>),
         (<div label="new indent" key="defaultTab2" mykey="defaultTab2">
