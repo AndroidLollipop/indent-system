@@ -108,14 +108,20 @@ const App = () => {
     }
   }, [appbarRef, appbarRef?.current?.offsetHeight])
 
-  const newIndentPersistentStore = React.useRef({})
+  const militaryPersistentStore = React.useRef({})
+  const militaryFilter = React.useMemo(() => x => x.system !== "Civilian", [])
+  const civilianPersistentStore = React.useRef({})
+  const civilianFilter = React.useMemo(() => x => x.system === "Civilian", [])
   const childScrollContext = React.useRef({})
 
   return (
     <div>
       <Tabs childWrapper={ScrollWrapper} childContext={childScrollContext} selTab={selTab} setSelTab={setSelTab} appbarRef={appbarRef}>
-        {[(<div label="view indents" key="defaultTab1" mykey="defaultTab1">
-          <TransportView setSelTab={setSelTab} heightProvider={[currentHeight, heightListeners]} />
+        {[(<div label="military indents" key="defaultTab0" mykey="defaultTab0">
+          <TransportView setSelTab={setSelTab} heightProvider={[currentHeight, heightListeners]} transportPersistentStore={militaryPersistentStore.current} filter={militaryFilter}/>
+        </div>),
+        (<div label="civilian indents" key="defaultTab1" mykey="defaultTab1">
+          <TransportView setSelTab={setSelTab} heightProvider={[currentHeight, heightListeners]} transportPersistentStore={civilianPersistentStore.current} filter={civilianFilter}/>
         </div>),
         (<div label="new indent" key="defaultTab2" mykey="defaultTab2">
           <NewIndentView id={0}/>
@@ -500,8 +506,6 @@ const NewIndentView = ({id, cloneID}) => {
 
 const DEBOUNCE_PERIOD = 100
 
-const transportPersistentStore = {}
-
 const Appointment = (setSelTab) => ({data, children, ...restProps}) => {
   const system = data.system
   var backgroundColor = "gray"
@@ -533,7 +537,7 @@ const Appointment = (setSelTab) => ({data, children, ...restProps}) => {
   </Appointments.Appointment>)
 }
 
-const TransportView = ({setSelTab, heightProvider}) => {
+const TransportView = ({setSelTab, heightProvider, transportPersistentStore, filter}) => {
   if (transportPersistentStore.initialized !== true) {
     transportPersistentStore.initialized = true
     transportPersistentStore.data = ""
@@ -580,7 +584,8 @@ const TransportView = ({setSelTab, heightProvider}) => {
   const barRef = React.useRef(null)
   const [mySort, setSort] = React.useState(transportPersistentStore.sort)
   const [isUp, setUp] = React.useState(transportPersistentStore.up)
-  const filteredData = React.useMemo(() => data.filter(x => x.status !== "Hidden"), [data])
+  const preFilteredData = React.useMemo(() => data.filter(x => x.status !== "Hidden"), [data])
+  const filteredData = React.useMemo(() => preFilteredData.filter(filter), [preFilteredData, filter])
   const sortedData = React.useMemo(() => mySort === null ? filteredData : filteredData.map((x, index) => [x, index]).sort(([dx, ix], [dy, iy]) => {
     const materializer = typeof sortMaterializers[mySort] === "function" ? sortMaterializers[mySort] : x => x
     const x = materializer(dx[mySort])
