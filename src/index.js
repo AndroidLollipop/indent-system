@@ -208,6 +208,12 @@ const DetailGenerator = ({setSelTab, details, heightProvider}) => {
     detailPersistentStore[id] = readDataStore(index)
   }
   const [data, setData] = React.useState(detailPersistentStore[id])
+  const edit = async () => {
+    const result = await editData(index, detailPersistentStore[id])
+    if (result === true) {
+      alert("Indent saved successfully!")
+    }
+  }
   return (
   <div>
     <div style={{height:"12px"}}/>
@@ -242,7 +248,7 @@ const DetailGenerator = ({setSelTab, details, heightProvider}) => {
       </div>
       <div style={{display:"inline-block", width:"1px"}}/>
       <div style={{display:"inline", verticalAlign:"middle"}}>
-        <Material.Button variant="outlined" onClick={() => {editData(index, detailPersistentStore[id])}}>Save</Material.Button>
+        <Material.Button variant="outlined" onClick={edit}>Save</Material.Button>
       </div>
     </div>
   </div>
@@ -254,6 +260,7 @@ const editData = async (index, newData) => {
   if (refresh) {
     notifyNewData()
   }
+  return refresh
 }
 
 const readDataStore = (internalUID) => {
